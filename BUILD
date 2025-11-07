@@ -12,10 +12,10 @@ gerrit_plugin(
     srcs = glob(["src/main/java/**/*.java"]),
     manifest_entries = [
         "Gerrit-PluginName: events-aws-kinesis",
-        "Gerrit-InitStep: com.googlesource.gerrit.plugins.kinesis.InitConfig",
-        "Gerrit-Module: com.googlesource.gerrit.plugins.kinesis.Module",
+        "Gerrit-InitStep: com.gerritforge.gerrit.plugins.kinesis.InitConfig",
+        "Gerrit-Module: com.gerritforge.gerrit.plugins.kinesis.Module",
         "Implementation-Title: Gerrit events listener to send events to AWS Kinesis broker",
-        "Implementation-URL: https://gerrit.googlesource.com/plugins/events-aws-kinesis",
+        "Implementation-URL: https://github.com/GerritForge/events-aws-kinesis",
     ],
     resources = glob(["src/main/resources/**/*"]),
     deps = [
