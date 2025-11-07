@@ -11,7 +11,7 @@ match the events-aws-kinesis plugin one.
 ```shell script
 git clone --recursive https://gerrit.googlesource.com/gerrit
 cd gerrit
-git clone "https://gerrit.googlesource.com/plugins/events-aws-kinesis" plugins/events-aws-kinesis
+git clone "https://review.gerrithub.io/GerritForge/events-aws-kinesis" plugins/events-aws-kinesis
 git clone "https://gerrit.googlesource.com/modules/events-broker" plugins/events-broker
 ln -sf plugins/events-aws-kinesis/external_plugin_deps.bzl plugins/.
 bazelisk build plugins/events-aws-kinesis
