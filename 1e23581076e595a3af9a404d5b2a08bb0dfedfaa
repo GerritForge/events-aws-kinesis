@@ -24,6 +24,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b36a8ab4_e2c4b6b9",
+        "filename": "BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2025-11-09T11:42:00Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "0058a357_d0ea0cba",
+      "range": {
+        "startLine": 18,
+        "startChar": 29,
+        "endLine": 18,
+        "endChar": 87
+      },
+      "revId": "1e23581076e595a3af9a404d5b2a08bb0dfedfaa",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "861c6c69_d2c2c9ee",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-11-09T11:41:25Z",
       "side": 1,
       "message": "This should point to GitHub.\n\n\n\n```suggestion\ngit clone \"https://github.com/GerritForge/events-aws-kinesis\" plugins/events-aws-kinesis\n```",
+      "range": {
+        "startLine": 14,
+        "startChar": 19,
+        "endLine": 14,
+        "endChar": 69
+      },
+      "revId": "1e23581076e595a3af9a404d5b2a08bb0dfedfaa",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b513585_1e4a29a4",
+        "filename": "src/main/resources/Documentation/Build.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2025-11-09T11:42:00Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "861c6c69_d2c2c9ee",
       "range": {
         "startLine": 14,
         "startChar": 19,
