@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b7b9ada6_27c283dc",
+        "filename": "BUILD",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2026-03-25T15:21:45Z",
+      "side": 0,
+      "message": "This needs to stay because it isn\u0027t defined and exported by Gerrit plugins.",
+      "range": {
+        "startLine": 46,
+        "startChar": 8,
+        "endLine": 46,
+        "endChar": 29
+      },
+      "revId": "6b27354352a6aae213c5151e53deee874b23427f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    }
+  ]
+}
