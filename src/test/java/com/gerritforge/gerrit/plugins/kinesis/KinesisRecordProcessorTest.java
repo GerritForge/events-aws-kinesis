@@ -19,6 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.gerritforge.gerrit.eventbroker.EventDeserializer;
 import com.google.gerrit.server.events.Event;
 import com.google.gerrit.server.events.EventGsonProvider;
@@ -28,7 +29,6 @@ import com.google.gerrit.server.util.OneOffRequestContext;
 import com.google.gson.Gson;
 import java.util.Collections;
 import java.util.UUID;
-import java.util.function.Consumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +50,7 @@ public class KinesisRecordProcessorTest {
   private Gson gson = new EventGsonProvider().get();
   private EventDeserializer eventDeserializer = new EventDeserializer(gson);
 
-  @Mock Consumer<Event> succeedingConsumer;
+  @Mock AckAwareConsumer<Event> succeedingConsumer;
   @Captor ArgumentCaptor<Event> eventMessageCaptor;
   @Mock OneOffRequestContext oneOffCtx;
   @Mock ManualRequestContext requestContext;
@@ -92,7 +92,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldSkipEventWithoutSourceInstanceId() {
+  public void shouldProcessEventWithoutSourceInstanceId() {
     Event event = new ProjectCreatedEvent();
     event.instanceId = UUID.randomUUID().toString();
 
@@ -100,7 +100,7 @@ public class KinesisRecordProcessorTest {
 
     objectUnderTest.processRecords(kinesisInput);
 
-    verify(succeedingConsumer, never()).accept(event);
+    verify(succeedingConsumer, times(1)).accept(any(), any());
   }
 
   @Test
@@ -113,7 +113,7 @@ public class KinesisRecordProcessorTest {
     ProcessRecordsInput kinesisInput = sampleMessage(gson.toJson(event));
     objectUnderTest.processRecords(kinesisInput);
 
-    verify(succeedingConsumer, only()).accept(eventMessageCaptor.capture());
+    verify(succeedingConsumer, only()).accept(eventMessageCaptor.capture(), any());
 
     Event result = eventMessageCaptor.getValue();
     assertThat(result.instanceId).isEqualTo(instanceId);
@@ -127,7 +127,7 @@ public class KinesisRecordProcessorTest {
     ProcessRecordsInput kinesisInput = sampleMessage(gson.toJson(event));
     objectUnderTest.processRecords(kinesisInput);
 
-    verify(succeedingConsumer, times(1)).accept(any());
+    verify(succeedingConsumer, times(1)).accept(any(), any());
   }
 
   @Test
@@ -139,7 +139,7 @@ public class KinesisRecordProcessorTest {
     ProcessRecordsInput kinesisInput = sampleMessage(gson.toJson(event));
     objectUnderTest.processRecords(kinesisInput);
 
-    verify(succeedingConsumer, never()).accept(any());
+    verify(succeedingConsumer, never()).accept(any(), any());
   }
 
   @Test
@@ -151,7 +151,7 @@ public class KinesisRecordProcessorTest {
     ProcessRecordsInput kinesisInput = sampleMessage(gson.toJson(event));
     objectUnderTest.processRecords(kinesisInput);
 
-    verify(succeedingConsumer, never()).accept(any());
+    verify(succeedingConsumer, never()).accept(any(), any());
   }
 
   @Test
@@ -161,7 +161,7 @@ public class KinesisRecordProcessorTest {
     ProcessRecordsInput kinesisInput = sampleMessage(emptyJsonObject);
     objectUnderTest.processRecords(kinesisInput);
 
-    verify(succeedingConsumer, never()).accept(any());
+    verify(succeedingConsumer, never()).accept(any(), any());
   }
 
   @Test
@@ -172,7 +172,7 @@ public class KinesisRecordProcessorTest {
     ProcessRecordsInput kinesisInput = sampleMessage(gson.toJson(event));
     objectUnderTest.processRecords(kinesisInput);
 
-    verify(succeedingConsumer, only()).accept(any(Event.class));
+    verify(succeedingConsumer, only()).accept(any(Event.class), any());
   }
 
   private ProcessRecordsInput sampleMessage(String message) {
