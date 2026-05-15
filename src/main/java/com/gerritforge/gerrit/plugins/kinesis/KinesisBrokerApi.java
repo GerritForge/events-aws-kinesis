@@ -11,6 +11,7 @@
 
 package com.gerritforge.gerrit.plugins.kinesis;
 
+import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.gerritforge.gerrit.eventbroker.BrokerApi;
 import com.gerritforge.gerrit.eventbroker.TopicSubscriber;
 import com.gerritforge.gerrit.eventbroker.TopicSubscriberWithGroupId;
@@ -22,7 +23,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class KinesisBrokerApi implements BrokerApi {
@@ -49,12 +49,12 @@ class KinesisBrokerApi implements BrokerApi {
   }
 
   @Override
-  public void receiveAsync(String streamName, Consumer<Event> eventConsumer) {
+  public void receiveAsync(String streamName, AckAwareConsumer<Event> eventConsumer) {
     receive(streamName, eventConsumer, null);
   }
 
   @Override
-  public void receiveAsync(String streamName, String groupId, Consumer<Event> consumer) {
+  public void receiveAsync(String streamName, String groupId, AckAwareConsumer<Event> consumer) {
     receive(streamName, consumer, groupId);
   }
 
@@ -100,8 +100,13 @@ class KinesisBrokerApi implements BrokerApi {
         .collect(Collectors.toSet());
   }
 
+  @Override
+  public boolean isAutoAck() {
+    return true;
+  }
+
   private void receive(
-      String streamName, Consumer<Event> eventConsumer, @Nullable String maybeGroupId) {
+      String streamName, AckAwareConsumer<Event> eventConsumer, @Nullable String maybeGroupId) {
     String groupId = Optional.ofNullable(maybeGroupId).orElse(configuration.getApplicationName());
     KinesisConsumer consumer = consumerFactory.create(streamName, groupId, eventConsumer);
     consumers.add(consumer);
