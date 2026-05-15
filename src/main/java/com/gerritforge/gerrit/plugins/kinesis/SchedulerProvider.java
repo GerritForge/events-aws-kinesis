@@ -13,6 +13,7 @@ package com.gerritforge.gerrit.plugins.kinesis;
 
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.consumerLeaseName;
 
+import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.google.gerrit.server.events.Event;
 import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
@@ -33,7 +34,7 @@ class SchedulerProvider implements Provider<Scheduler> {
         @Assisted("streamName") String streamName,
         @Assisted("groupId") String groupId,
         boolean fromBeginning,
-        java.util.function.Consumer<Event> messageProcessor);
+        AckAwareConsumer<Event> messageProcessor);
   }
 
   private final ConfigsBuilder configsBuilder;
@@ -52,7 +53,7 @@ class SchedulerProvider implements Provider<Scheduler> {
       @Assisted("streamName") String streamName,
       @Assisted("groupId") String groupId,
       @Assisted boolean fromBeginning,
-      @Assisted java.util.function.Consumer<Event> messageProcessor) {
+      @Assisted AckAwareConsumer<Event> messageProcessor) {
     this.configuration = configuration;
     this.kinesisAsyncClient = kinesisAsyncClient;
     this.streamName = streamName;
