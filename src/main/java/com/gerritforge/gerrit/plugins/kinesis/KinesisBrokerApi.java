@@ -103,7 +103,7 @@ class KinesisBrokerApi implements BrokerApi {
 
   @Override
   public boolean isAutoAck() {
-    return true;
+    return configuration.isAutoCommitEnabled();
   }
 
   private void receive(
