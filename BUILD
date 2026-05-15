@@ -42,7 +42,6 @@ gerrit_plugin(
         "@awssdk-metrics-spi//jar",
         "@awssdk-protocol-core//jar",
         "@awssdk-query-protocol//jar",
-        "@commons-codec//jar",
         "@commons-lang//jar",
         "@io-netty-all//jar",
         "@jackson-annotations//jar",
