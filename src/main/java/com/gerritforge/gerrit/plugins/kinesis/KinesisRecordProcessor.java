@@ -11,6 +11,7 @@
 
 package com.gerritforge.gerrit.plugins.kinesis;
 
+import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.gerritforge.gerrit.eventbroker.EventDeserializer;
 import com.google.common.flogger.FluentLogger;
 import com.google.gerrit.server.events.Event;
@@ -18,7 +19,6 @@ import com.google.gerrit.server.util.ManualRequestContext;
 import com.google.gerrit.server.util.OneOffRequestContext;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import java.util.function.Consumer;
 import software.amazon.kinesis.exceptions.InvalidStateException;
 import software.amazon.kinesis.exceptions.ShutdownException;
 import software.amazon.kinesis.exceptions.ThrottlingException;
@@ -32,11 +32,11 @@ import software.amazon.kinesis.processor.ShardRecordProcessor;
 
 class KinesisRecordProcessor implements ShardRecordProcessor {
   interface Factory {
-    KinesisRecordProcessor create(Consumer<Event> recordProcessor);
+    KinesisRecordProcessor create(AckAwareConsumer<Event> recordProcessor);
   }
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
-  private final Consumer<Event> recordProcessor;
+  private final AckAwareConsumer<Event> recordProcessor;
   private final OneOffRequestContext oneOffCtx;
   private final EventDeserializer eventDeserializer;
   private final Configuration configuration;
@@ -46,7 +46,7 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
 
   @Inject
   KinesisRecordProcessor(
-      @Assisted Consumer<Event> recordProcessor,
+      @Assisted AckAwareConsumer<Event> recordProcessor,
       OneOffRequestContext oneOffCtx,
       EventDeserializer eventDeserializer,
       Configuration configuration) {
@@ -81,7 +81,7 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
                 logger.atFiner().log("Kinesis consumed event: '%s'", jsonMessage);
                 try (ManualRequestContext ctx = oneOffCtx.open()) {
                   Event eventMessage = eventDeserializer.deserialize(jsonMessage);
-                  recordProcessor.accept(eventMessage);
+                  recordProcessor.accept(eventMessage, unusedAck -> {});
                 } catch (Exception e) {
                   logger.atSevere().withCause(e).log("Could not process event '%s'", jsonMessage);
                 }
