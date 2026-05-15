@@ -17,6 +17,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.DYNAMODB;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.KINESIS;
 
+import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.gerritforge.gerrit.eventbroker.BrokerApi;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gerrit.acceptance.LightweightPluginDaemonTest;
@@ -32,7 +33,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.testcontainers.containers.localstack.LocalStackContainer;
@@ -319,11 +319,13 @@ public class KinesisEventsIT extends LightweightPluginDaemonTest {
         .count();
   }
 
-  private static class EventConsumerCounter implements Consumer<Event> {
+  private static class EventConsumerCounter implements AckAwareConsumer<Event> {
     List<Event> consumedMessages = new ArrayList<>();
 
     @Override
-    public void accept(Event eventMessage) {
+    public void accept(
+        Event eventMessage,
+        com.gerritforge.gerrit.eventbroker.MessageAcknowledgement<Event> acknowledgement) {
       consumedMessages.add(eventMessage);
     }
 

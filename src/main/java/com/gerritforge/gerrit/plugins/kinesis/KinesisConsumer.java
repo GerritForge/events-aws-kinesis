@@ -11,6 +11,7 @@
 
 package com.gerritforge.gerrit.plugins.kinesis;
 
+import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.google.common.flogger.FluentLogger;
 import com.google.gerrit.server.events.Event;
 import com.google.inject.Inject;
@@ -19,7 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import software.amazon.kinesis.coordinator.Scheduler;
 
 class KinesisConsumer {
@@ -27,7 +27,7 @@ class KinesisConsumer {
     KinesisConsumer create(
         @Assisted("streamName") String streamName,
         @Assisted("groupId") String groupId,
-        Consumer<Event> messageProcessor);
+        AckAwareConsumer<Event> messageProcessor);
   }
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
@@ -39,7 +39,7 @@ class KinesisConsumer {
   private final String groupId;
   private Scheduler kinesisScheduler;
 
-  private final java.util.function.Consumer<Event> messageProcessor;
+  private final AckAwareConsumer<Event> messageProcessor;
   private final String streamName;
   private AtomicBoolean resetOffset = new AtomicBoolean(false);
 
@@ -51,7 +51,7 @@ class KinesisConsumer {
       @ConsumerExecutor ExecutorService executor,
       @Assisted("streamName") String streamName,
       @Assisted("groupId") String groupId,
-      @Assisted java.util.function.Consumer<Event> messageProcessor) {
+      @Assisted AckAwareConsumer<Event> messageProcessor) {
     this.schedulerFactory = schedulerFactory;
     this.checkpointResetter = checkpointResetter;
     this.configuration = configuration;
@@ -66,7 +66,7 @@ class KinesisConsumer {
     runReceiver(groupId, messageProcessor);
   }
 
-  private void runReceiver(String groupId, java.util.function.Consumer<Event> messageProcessor) {
+  private void runReceiver(String groupId, AckAwareConsumer<Event> messageProcessor) {
     this.kinesisScheduler =
         schedulerFactory
             .create(streamName, groupId, resetOffset.getAndSet(false), messageProcessor)
@@ -88,7 +88,7 @@ class KinesisConsumer {
     logger.atInfo().log("Shutdown kinesis consumer of stream %s completed.", getStreamName());
   }
 
-  public java.util.function.Consumer<Event> getMessageProcessor() {
+  public AckAwareConsumer<Event> getMessageProcessor() {
     return messageProcessor;
   }
 
