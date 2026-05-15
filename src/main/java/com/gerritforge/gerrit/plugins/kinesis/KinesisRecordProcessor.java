@@ -13,12 +13,14 @@ package com.gerritforge.gerrit.plugins.kinesis;
 
 import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.gerritforge.gerrit.eventbroker.EventDeserializer;
+import com.gerritforge.gerrit.eventbroker.MessageAcknowledgementException;
 import com.google.common.flogger.FluentLogger;
 import com.google.gerrit.server.events.Event;
 import com.google.gerrit.server.util.ManualRequestContext;
 import com.google.gerrit.server.util.OneOffRequestContext;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import java.util.HashMap;
 import software.amazon.kinesis.exceptions.InvalidStateException;
 import software.amazon.kinesis.exceptions.ShutdownException;
 import software.amazon.kinesis.exceptions.ThrottlingException;
@@ -29,6 +31,7 @@ import software.amazon.kinesis.lifecycle.events.ShardEndedInput;
 import software.amazon.kinesis.lifecycle.events.ShutdownRequestedInput;
 import software.amazon.kinesis.processor.RecordProcessorCheckpointer;
 import software.amazon.kinesis.processor.ShardRecordProcessor;
+import software.amazon.kinesis.retrieval.KinesisClientRecord;
 
 class KinesisRecordProcessor implements ShardRecordProcessor {
   interface Factory {
@@ -36,6 +39,7 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
   }
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+  private final HashMap<Event, KinesisClientRecord> ackRecords = new HashMap<>();
   private final AckAwareConsumer<Event> recordProcessor;
   private final OneOffRequestContext oneOffCtx;
   private final EventDeserializer eventDeserializer;
@@ -64,6 +68,26 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
     setNextCheckpointTime();
   }
 
+  private void ackRecord(Event event, RecordProcessorCheckpointer checkpointer) {
+    KinesisClientRecord record = ackRecords.get(event);
+    if (record == null) {
+      throw new MessageAcknowledgementException("Invalid or already acked Event");
+    }
+
+    try {
+      checkpointer.checkpoint(record.sequenceNumber(), record.subSequenceNumber());
+      logger.atFine().log(
+          "Checkpointed record %s:%d", record.sequenceNumber(), record.subSequenceNumber());
+      ackRecords.remove(event);
+    } catch (Exception e) {
+      throw new MessageAcknowledgementException(
+          String.format(
+              "Failed to acknowledge record %s:%d",
+              record.sequenceNumber(), record.subSequenceNumber()),
+          e);
+    }
+  }
+
   @Override
   public void processRecords(ProcessRecordsInput processRecordsInput) {
     try {
@@ -81,13 +105,19 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
                 logger.atFiner().log("Kinesis consumed event: '%s'", jsonMessage);
                 try (ManualRequestContext ctx = oneOffCtx.open()) {
                   Event eventMessage = eventDeserializer.deserialize(jsonMessage);
-                  recordProcessor.accept(eventMessage, unusedEvent -> {});
+                  ackRecords.put(eventMessage, consumerRecord);
+                  recordProcessor.accept(
+                      eventMessage,
+                      configuration.isAutoCommitEnabled()
+                          ? KinesisAutoAcknowledgement.INSTANCE
+                          : (event) -> ackRecord(event, processRecordsInput.checkpointer()));
                 } catch (Exception e) {
                   logger.atSevere().withCause(e).log("Could not process event '%s'", jsonMessage);
                 }
               });
 
-      if (System.currentTimeMillis() >= nextCheckpointTimeInMillis) {
+      if (configuration.isAutoCommitEnabled()
+          && System.currentTimeMillis() >= nextCheckpointTimeInMillis) {
         checkpoint(processRecordsInput.checkpointer());
         setNextCheckpointTime();
       }
@@ -108,14 +138,26 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
 
   @Override
   public void shardEnded(ShardEndedInput shardEndedInput) {
-    logger.atInfo().log("Reached shard end checkpointing.");
-    checkpoint(shardEndedInput.checkpointer());
+    if (configuration.isAutoCommitEnabled()) {
+      logger.atInfo().log("Reached shard end checkpointing.");
+      checkpoint(shardEndedInput.checkpointer());
+    } else {
+      logger.atInfo().log(
+          "Reached shard end, skipping automatic checkpoint because manual acknowledgement is"
+              + " enabled.");
+    }
   }
 
   @Override
   public void shutdownRequested(ShutdownRequestedInput shutdownRequestedInput) {
-    logger.atInfo().log("Scheduler is shutting down, checkpointing.");
-    checkpoint(shutdownRequestedInput.checkpointer());
+    if (configuration.isAutoCommitEnabled()) {
+      logger.atInfo().log("Scheduler is shutting down, checkpointing.");
+      checkpoint(shutdownRequestedInput.checkpointer());
+    } else {
+      logger.atInfo().log(
+          "Scheduler is shutting down, skipping automatic checkpoint because manual acknowledgement"
+              + " is enabled.");
+    }
   }
 
   private void checkpoint(RecordProcessorCheckpointer checkpointer) {
