@@ -29,6 +29,7 @@ import com.google.gerrit.server.util.OneOffRequestContext;
 import com.google.gson.Gson;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kinesis.model.Record;
 import software.amazon.kinesis.lifecycle.events.InitializationInput;
 import software.amazon.kinesis.lifecycle.events.ProcessRecordsInput;
+import software.amazon.kinesis.processor.RecordProcessorCheckpointer;
 import software.amazon.kinesis.retrieval.KinesisClientRecord;
 import software.amazon.kinesis.retrieval.kpl.ExtendedSequenceNumber;
 
@@ -55,10 +57,12 @@ public class KinesisRecordProcessorTest {
   @Mock OneOffRequestContext oneOffCtx;
   @Mock ManualRequestContext requestContext;
   @Mock Configuration configuration;
+  @Mock RecordProcessorCheckpointer checkpointer;
 
   @Before
   public void setup() {
     when(oneOffCtx.open()).thenReturn(requestContext);
+    when(configuration.isAutoCommitEnabled()).thenReturn(true);
     objectUnderTest =
         new KinesisRecordProcessor(succeedingConsumer, oneOffCtx, eventDeserializer, configuration);
   }
@@ -175,13 +179,79 @@ public class KinesisRecordProcessorTest {
     verify(succeedingConsumer, only()).accept(any(Event.class), any());
   }
 
+  @Test
+  public void shouldNotAutoCommitWhenManualAcknowledgementIsEnabled() throws Exception {
+    when(configuration.isAutoCommitEnabled()).thenReturn(false);
+    when(configuration.getCheckpointIntervalMs()).thenReturn(0L);
+    Event event = new ProjectCreatedEvent();
+
+    initializeRecordProcessor();
+
+    objectUnderTest.processRecords(sampleMessage(gson.toJson(event)));
+
+    verify(checkpointer, never()).checkpoint();
+  }
+
+  @Test
+  public void shouldCommitCurrentRecordWhenManualAcknowledgementIsCalled() throws Exception {
+    String sequenceNumber = "12345";
+    when(configuration.isAutoCommitEnabled()).thenReturn(false);
+    objectUnderTest =
+        new KinesisRecordProcessor(
+            (event, acknowledgement) -> acknowledgement.ack(event),
+            oneOffCtx,
+            eventDeserializer,
+            configuration);
+
+    KinesisClientRecord clientRecord =
+        sampleClientRecord(sequenceNumber, gson.toJson(new ProjectCreatedEvent()));
+    ProcessRecordsInput input = sampleMessage(clientRecord);
+    objectUnderTest.processRecords(input);
+
+    verify(checkpointer)
+        .checkpoint(clientRecord.sequenceNumber(), clientRecord.subSequenceNumber());
+  }
+
+  @Test
+  public void shouldRejectExplicitAckWhenAutomaticCommitIsEnabled() {
+    AtomicReference<IllegalStateException> thrown = new AtomicReference<>();
+    objectUnderTest =
+        new KinesisRecordProcessor(
+            (event, acknowledgement) -> {
+              try {
+                acknowledgement.ack(event);
+              } catch (IllegalStateException e) {
+                thrown.set(e);
+              }
+            },
+            oneOffCtx,
+            eventDeserializer,
+            configuration);
+
+    objectUnderTest.processRecords(sampleMessage(gson.toJson(new ProjectCreatedEvent())));
+
+    assertThat(thrown.get()).isNotNull();
+    assertThat(thrown.get()).hasMessageThat().contains("already acknowledged automatically");
+  }
+
   private ProcessRecordsInput sampleMessage(String message) {
-    Record kinesisRecord = Record.builder().data(SdkBytes.fromUtf8String(message)).build();
-    ProcessRecordsInput kinesisInput =
-        ProcessRecordsInput.builder()
-            .records(Collections.singletonList(KinesisClientRecord.fromRecord(kinesisRecord)))
+    return sampleMessage(sampleClientRecord("0000", message));
+  }
+
+  private ProcessRecordsInput sampleMessage(KinesisClientRecord clientRecord) {
+    return ProcessRecordsInput.builder()
+        .checkpointer(checkpointer)
+        .records(Collections.singletonList(clientRecord))
+        .build();
+  }
+
+  private KinesisClientRecord sampleClientRecord(String sequenceNumber, String message) {
+    Record kinesisRecord =
+        Record.builder()
+            .data(SdkBytes.fromUtf8String(message))
+            .sequenceNumber(sequenceNumber)
             .build();
-    return kinesisInput;
+    return KinesisClientRecord.fromRecord(kinesisRecord);
   }
 
   private void initializeRecordProcessor() {
