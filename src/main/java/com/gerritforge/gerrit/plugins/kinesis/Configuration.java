@@ -42,6 +42,7 @@ class Configuration {
   static final String AWS_LIB_LOG_LEVEL_FIELD = "awsLibLogLevel";
   static final String SEND_ASYNC_FIELD = "sendAsync";
   static final String SEND_STREAM_EVENTS_FIELD = "sendStreamEvents";
+  static final String ENABLE_AUTO_COMMIT_FIELD = "enableAutoCommit";
 
   static final String DEFAULT_NUMBER_OF_SUBSCRIBERS = "6";
   static final String DEFAULT_STREAM_EVENTS_TOPIC = "gerrit";
@@ -56,6 +57,7 @@ class Configuration {
   static final Level DEFAULT_AWS_LIB_LOG_LEVEL = Level.WARN;
   static final Boolean DEFAULT_SEND_ASYNC = true;
   static final Boolean DEFAULT_SEND_STREAM_EVENTS = false;
+  static final Boolean DEFAULT_ENABLE_AUTO_COMMIT = true;
   static final Long DEFAULT_CHECKPOINT_INTERVAL_MS = 5 * 60000L; // 5 min
 
   private final String applicationName;
@@ -73,6 +75,7 @@ class Configuration {
   private final Level awsLibLogLevel;
   private final Boolean sendAsync;
   private final Boolean sendStreamEvents;
+  private final Boolean enableAutoCommit;
   private final Optional<String> awsConfigurationProfileName;
   private final Long publishRecordMaxBufferedTimeMs;
   private final Long consumerFailoverTimeInMs;
@@ -152,6 +155,11 @@ class Configuration {
         Optional.ofNullable(getStringParam(pluginConfig, SEND_ASYNC_FIELD, null))
             .map(Boolean::parseBoolean)
             .orElse(DEFAULT_SEND_ASYNC);
+
+    this.enableAutoCommit =
+        Optional.ofNullable(getStringParam(pluginConfig, ENABLE_AUTO_COMMIT_FIELD, null))
+            .map(Boolean::parseBoolean)
+            .orElse(DEFAULT_ENABLE_AUTO_COMMIT);
 
     this.awsConfigurationProfileName =
         Optional.ofNullable(getStringParam(pluginConfig, "profileName", null));
@@ -247,5 +255,9 @@ class Configuration {
 
   public Boolean isSendStreamEvents() {
     return sendStreamEvents;
+  }
+
+  public boolean isAutoCommitEnabled() {
+    return enableAutoCommit;
   }
 }

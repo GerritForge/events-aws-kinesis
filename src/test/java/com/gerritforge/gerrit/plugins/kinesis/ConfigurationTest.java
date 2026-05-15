@@ -112,6 +112,27 @@ public class ConfigurationTest {
   }
 
   @Test
+  public void shouldAutoCommitByDefault() {
+    when(pluginConfigFactoryMock.getFromGerritConfig(PLUGIN_NAME))
+        .thenReturn(pluginConfig.asPluginConfig());
+
+    Configuration configuration = new Configuration(pluginConfigFactoryMock, PLUGIN_NAME);
+
+    assertThat(configuration.isAutoCommitEnabled()).isTrue();
+  }
+
+  @Test
+  public void shouldAllowManualCommit() {
+    pluginConfig.setBoolean("enableAutoCommit", false);
+    when(pluginConfigFactoryMock.getFromGerritConfig(PLUGIN_NAME))
+        .thenReturn(pluginConfig.asPluginConfig());
+
+    Configuration configuration = new Configuration(pluginConfigFactoryMock, PLUGIN_NAME);
+
+    assertThat(configuration.isAutoCommitEnabled()).isFalse();
+  }
+
+  @Test
   public void shouldReturnAWSProfileNameWhenConfigured() {
     String awsProfileName = "aws_profile_name";
     pluginConfig.setString("profileName", awsProfileName);
