@@ -13,6 +13,7 @@ package com.gerritforge.gerrit.plugins.kinesis;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.APPLICATION_NAME_FIELD;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.AWS_LIB_LOG_LEVEL_FIELD;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_AWS_LIB_LOG_LEVEL;
+import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_ENABLE_AUTO_COMMIT;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_INITIAL_POSITION;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_MAX_RECORDS;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_NUMBER_OF_SUBSCRIBERS;
@@ -23,6 +24,7 @@ import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_SEND_
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_SEND_STREAM_EVENTS;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_SHUTDOWN_TIMEOUT_MS;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.DEFAULT_STREAM_EVENTS_TOPIC;
+import static com.gerritforge.gerrit.plugins.kinesis.Configuration.ENABLE_AUTO_COMMIT_FIELD;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.ENDPOINT_FIELD;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.INITIAL_POSITION_FIELD;
 import static com.gerritforge.gerrit.plugins.kinesis.Configuration.MAX_RECORDS_FIELD;
@@ -102,6 +104,9 @@ public class InitConfig implements InitStep {
         "Maximum total time waiting when shutting down (ms)",
         SHUTDOWN_MS_FIELD,
         Long.toString(DEFAULT_SHUTDOWN_TIMEOUT_MS));
+    boolean enableAutoCommit =
+        ui.yesno(DEFAULT_ENABLE_AUTO_COMMIT, "Should commit messages automatically?");
+    pluginSection.set(ENABLE_AUTO_COMMIT_FIELD, Boolean.toString(enableAutoCommit));
     pluginSection.string(
         "Which level AWS libraries should log at",
         AWS_LIB_LOG_LEVEL_FIELD,
