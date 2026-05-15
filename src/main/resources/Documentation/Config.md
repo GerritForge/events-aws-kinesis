@@ -102,8 +102,15 @@ The events-aws-kinesis plugin is configured by adding a plugin stanza in the
   kinesis consumers.
   Default: 20000
 
+`plugin.events-aws-kinesis.enableAutoCommit`
+: Optional. Whether the plugin should checkpoint consumed records automatically.
+  When set to `false`, consumers receive an explicit acknowledgement handle and
+  checkpoints advance only when `ack(event)` is invoked.
+  Default: true
+
 `plugin.events-aws-kinesis.checkpointIntervalMs`
-: Optional. The interval between checkpoints (milliseconds).
+: Optional. The interval between checkpoints (milliseconds) when
+  `enableAutoCommit = true`.
   Default: 300000 (5 minutes)
 
 `plugin.events-aws-kinesis.awsLibLogLevel`
@@ -167,6 +174,7 @@ Maximum number of record to fetch [100]:
 The maximum total time waiting for a publish result (ms) [6000]:
 The maximum total time waiting for publishing, including retries [6000]:
 The maximum total time waiting when shutting down (ms) [20000]:
+Should commit messages automatically? [Y/n]?
 Which level AWS libraries should log at [WARN]:
 Should send messages asynchronously? [Y/n]?
 ```

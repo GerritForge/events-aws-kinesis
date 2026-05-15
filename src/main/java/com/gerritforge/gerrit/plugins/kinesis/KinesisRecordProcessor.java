@@ -83,16 +83,17 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
                   Event eventMessage = eventDeserializer.deserialize(jsonMessage);
                   recordProcessor.accept(
                       eventMessage,
-                      unusedEvent -> {
-                        throw new IllegalStateException(
-                            "Message is already acknowledged automatically");
-                      });
+                      configuration.isAutoCommitEnabled()
+                          ? KinesisAutoAcknowledgement.INSTANCE
+                          : new KinesisRecordAcknowledgement(
+                              consumerRecord, processRecordsInput.checkpointer()));
                 } catch (Exception e) {
                   logger.atSevere().withCause(e).log("Could not process event '%s'", jsonMessage);
                 }
               });
 
-      if (System.currentTimeMillis() >= nextCheckpointTimeInMillis) {
+      if (configuration.isAutoCommitEnabled()
+          && System.currentTimeMillis() >= nextCheckpointTimeInMillis) {
         checkpoint(processRecordsInput.checkpointer());
         setNextCheckpointTime();
       }
@@ -114,13 +115,17 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
   @Override
   public void shardEnded(ShardEndedInput shardEndedInput) {
     logger.atInfo().log("Reached shard end checkpointing.");
-    checkpoint(shardEndedInput.checkpointer());
+    if (configuration.isAutoCommitEnabled()) {
+      checkpoint(shardEndedInput.checkpointer());
+    }
   }
 
   @Override
   public void shutdownRequested(ShutdownRequestedInput shutdownRequestedInput) {
     logger.atInfo().log("Scheduler is shutting down, checkpointing.");
-    checkpoint(shutdownRequestedInput.checkpointer());
+    if (configuration.isAutoCommitEnabled()) {
+      checkpoint(shutdownRequestedInput.checkpointer());
+    }
   }
 
   private void checkpoint(RecordProcessorCheckpointer checkpointer) {
