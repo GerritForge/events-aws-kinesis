@@ -81,13 +81,19 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
                 logger.atFiner().log("Kinesis consumed event: '%s'", jsonMessage);
                 try (ManualRequestContext ctx = oneOffCtx.open()) {
                   Event eventMessage = eventDeserializer.deserialize(jsonMessage);
-                  recordProcessor.accept(eventMessage, unusedEvent -> {});
+                  recordProcessor.accept(
+                      eventMessage,
+                      configuration.isAutoCommitEnabled()
+                          ? KinesisAutoAcknowledgement.INSTANCE
+                          : new KinesisRecordAcknowledgement(
+                              consumerRecord, processRecordsInput.checkpointer()));
                 } catch (Exception e) {
                   logger.atSevere().withCause(e).log("Could not process event '%s'", jsonMessage);
                 }
               });
 
-      if (System.currentTimeMillis() >= nextCheckpointTimeInMillis) {
+      if (configuration.isAutoCommitEnabled()
+          && System.currentTimeMillis() >= nextCheckpointTimeInMillis) {
         checkpoint(processRecordsInput.checkpointer());
         setNextCheckpointTime();
       }
@@ -108,14 +114,26 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
 
   @Override
   public void shardEnded(ShardEndedInput shardEndedInput) {
-    logger.atInfo().log("Reached shard end checkpointing.");
-    checkpoint(shardEndedInput.checkpointer());
+    if (configuration.isAutoCommitEnabled()) {
+      logger.atInfo().log("Reached shard end checkpointing.");
+      checkpoint(shardEndedInput.checkpointer());
+    } else {
+      logger.atInfo().log(
+          "Reached shard end, skipping automatic checkpoint because manual acknowledgement is"
+              + " enabled.");
+    }
   }
 
   @Override
   public void shutdownRequested(ShutdownRequestedInput shutdownRequestedInput) {
-    logger.atInfo().log("Scheduler is shutting down, checkpointing.");
-    checkpoint(shutdownRequestedInput.checkpointer());
+    if (configuration.isAutoCommitEnabled()) {
+      logger.atInfo().log("Scheduler is shutting down, checkpointing.");
+      checkpoint(shutdownRequestedInput.checkpointer());
+    } else {
+      logger.atInfo().log(
+          "Scheduler is shutting down, skipping automatic checkpoint because manual acknowledgement"
+              + " is enabled.");
+    }
   }
 
   private void checkpoint(RecordProcessorCheckpointer checkpointer) {
