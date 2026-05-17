@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "439dc865_40246265",
+        "filename": "external_plugin_deps.bzl",
+        "patchSetId": 5
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2026-05-17T11:48:16Z",
+      "side": 1,
+      "message": "This can be removed now.",
+      "range": {
+        "startLine": 164,
+        "startChar": 0,
+        "endLine": 168,
+        "endChar": 5
+      },
+      "revId": "75a0e1bf0011a93f7b4435701d0a8f884e28a3ef",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "92d2433d_507f493a",
+        "filename": "external_plugin_deps.bzl",
+        "patchSetId": 5
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2026-05-17T11:48:16Z",
+      "side": 1,
+      "message": "This can be removed now",
+      "range": {
+        "startLine": 246,
+        "startChar": 0,
+        "endLine": 250,
+        "endChar": 5
+      },
+      "revId": "75a0e1bf0011a93f7b4435701d0a8f884e28a3ef",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    }
+  ]
+}
