@@ -162,12 +162,6 @@ def external_plugin_deps():
     )
 
     maven_jar(
-        name = "apache-commons-lang3",
-        artifact = "org.apache.commons:commons-lang3:3.12.0",
-        sha1 = "c6842c86792ff03b9f1d1fe2aab8dc23aa6c6f0e",
-    )
-
-    maven_jar(
         name = "commons-lang",
         artifact = "commons-lang:commons-lang:2.6",
         sha1 = "0ce1edb914c94ebc388f086c6827e8bdeec71ac2",
@@ -241,12 +235,6 @@ def external_plugin_deps():
         name = "aws-glue-schema-serde",
         artifact = "software.amazon.glue:schema-registry-serde:1.0.0",
         sha1 = "30815b670f89876465caa69b47e6df6fd6875d0f",
-    )
-
-    maven_jar(
-        name = "apache-commons-io",
-        artifact = "commons-io:commons-io:2.4",
-        sha1 = "b1b6ea3b7e4aa4f492509a4952029cd8e48019ad",
     )
 
     maven_jar(
