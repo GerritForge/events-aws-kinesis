@@ -128,7 +128,8 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
       logger.atSevere().withCause(e).log("Caught throttling exception, skipping checkpoint.");
     } catch (InvalidStateException e) {
       logger.atSevere().withCause(e).log(
-          "Cannot save checkpoint to the DynamoDB table used by the Amazon Kinesis Client Library.");
+          "Cannot save checkpoint to the DynamoDB table used by the Amazon Kinesis Client"
+              + " Library.");
     }
   }
 }
