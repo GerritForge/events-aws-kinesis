@@ -92,7 +92,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldSkipEventWithoutSourceInstanceId() {
+  public void shouldProcessEventWithoutSourceInstanceId() {
     Event event = new ProjectCreatedEvent();
     event.instanceId = UUID.randomUUID().toString();
 
@@ -100,7 +100,7 @@ public class KinesisRecordProcessorTest {
 
     objectUnderTest.processRecords(kinesisInput);
 
-    verify(succeedingConsumer, never()).accept(event);
+    verify(succeedingConsumer, times(1)).accept(any());
   }
 
   @Test
