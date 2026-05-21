@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "202e6dcb_c0301d93",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessor.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-05-21T15:31:24Z",
+      "side": 1,
+      "message": "This is not a problem just for this implementation, but I am a bit worried about adding these acks to the map in this way.\n\nIn the future, we will only map a subset of these events: say, every 5 minutes for example.\n\nThe vast majority of acks will therefore remain in the ack map, ever increasing in size. If acking implicitly commits every previous event, then we should perhaps clean up those too? Or perhaps we should get rid of this map altogether.\n\n@luca.milanesio@gmail.com, @ponch78@gmail.com thoughts? I think we should discuss.",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 63
+      },
+      "revId": "7db0087dd9ea4d4a958af8ac4f92aa60ead5f64c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0fff0ab9_244d2f23",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessor.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-05-21T15:31:24Z",
+      "side": 1,
+      "message": "nit: if we are in `autoCommit` mode no reason to add any entries to the ack records:\n\n```\nif (!configuration.isAutoCommitEnabled()) {\n```\n\nThis should probably fixed in kafka as well.",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 108,
+        "endChar": 63
+      },
+      "revId": "7db0087dd9ea4d4a958af8ac4f92aa60ead5f64c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9367f756_50fa5fa8",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessor.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-05-21T15:31:24Z",
+      "side": 1,
+      "message": "My understanding is that the shard-end checkpoint in KCL is a bit different from the periodic record checkpoint: it\u0027s the signal to the scheduler that the shard has been fully processed.\n\nKinesis shards can close when the stream is resharded. When KCL reaches the end of a closed shard, it expects the processor to do a final shard-end checkpoint.\n\nThat checkpoint means: \"I\u0027m done with this shard; you can move on.\"\n\nMaybe manual-ack mode should still do the shard-end checkpoint, but only once we know there are no pending unacked records. If there are pending records at shard end, I think we should probably log/fail loudly rather than silently skip the completion checkpoint?\n\nLet\u0027s discuss",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 141,
+        "endChar": 46
+      },
+      "revId": "7db0087dd9ea4d4a958af8ac4f92aa60ead5f64c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    }
+  ]
+}
