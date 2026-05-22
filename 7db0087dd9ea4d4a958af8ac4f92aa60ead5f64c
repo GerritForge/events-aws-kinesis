@@ -140,6 +140,30 @@
       },
       "revId": "7db0087dd9ea4d4a958af8ac4f92aa60ead5f64c",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8ed308c_d9a8d667",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessor.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-05-22T17:11:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9367f756_50fa5fa8",
+      "range": {
+        "startLine": 141,
+        "startChar": 0,
+        "endLine": 141,
+        "endChar": 46
+      },
+      "revId": "7db0087dd9ea4d4a958af8ac4f92aa60ead5f64c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     }
   ]
 }
