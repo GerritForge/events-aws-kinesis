@@ -24,6 +24,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cae0e7fe_c6fb9566",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessor.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-05-26T12:14:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "55ab617f_9752abbb",
+      "range": {
+        "startLine": 81,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 31
+      },
+      "revId": "1d6311788aee9c590b6b812128c26bc6996dafd6",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e0e7d7f6_08b6435a",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-05-26T11:10:53Z",
       "side": 1,
       "message": "if acking throws, the KCL will continue processing the rest of the batch. This means failed acknowledgements do not fail the batch or trigger any explicit retry behavior beyond the checkpoint not advancing.\n\nWe should document this clearly WDYT?",
+      "range": {
+        "startLine": 117,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 98
+      },
+      "revId": "1d6311788aee9c590b6b812128c26bc6996dafd6",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3bdd613f_722e9560",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessor.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-05-26T12:14:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e0e7d7f6_08b6435a",
       "range": {
         "startLine": 117,
         "startChar": 0,
@@ -70,6 +118,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "055cb2ea_eb3c4369",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessor.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-05-26T12:14:56Z",
+      "side": 1,
+      "message": "This has been formatted with Java Google formatter.",
+      "parentUuid": "0ca67dbf_aa0cc20d",
+      "range": {
+        "startLine": 148,
+        "startChar": 0,
+        "endLine": 155,
+        "endChar": 103
+      },
+      "revId": "1d6311788aee9c590b6b812128c26bc6996dafd6",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0a40446_14de10e7",
@@ -83,6 +155,30 @@
       "writtenOn": "2026-05-26T11:10:53Z",
       "side": 1,
       "message": "Sorry @ponch78@gmail.com, one last comment.\n\nI believe there are quite a few _constraints_ when enabling manual-acking mode that are not obvious.\nWe should probably clarify that acknowledgements must happen synchronously and in order.\n\nWDYT?",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 15
+      },
+      "revId": "1d6311788aee9c590b6b812128c26bc6996dafd6",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b28e3734_2f521aaa",
+        "filename": "src/main/resources/Documentation/Config.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-05-26T12:14:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0a40446_14de10e7",
       "range": {
         "startLine": 105,
         "startChar": 0,
@@ -129,6 +225,48 @@
       "writtenOn": "2026-05-26T11:10:53Z",
       "side": 1,
       "message": "This should not be true anymore, right? are tests still passing? 🤔",
+      "revId": "1d6311788aee9c590b6b812128c26bc6996dafd6",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14680eda_38983aeb",
+        "filename": "src/test/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessorTest.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-05-26T12:14:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5390f071_701bc72f",
+      "range": {
+        "startLine": 258,
+        "startChar": 14,
+        "endLine": 258,
+        "endChar": 68
+      },
+      "revId": "1d6311788aee9c590b6b812128c26bc6996dafd6",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c8dd559_f8c29a00",
+        "filename": "src/test/java/com/gerritforge/gerrit/plugins/kinesis/KinesisRecordProcessorTest.java",
+        "patchSetId": 15
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-05-26T12:14:56Z",
+      "side": 1,
+      "message": "Nope it is failing ..phew :P",
+      "parentUuid": "6f0ed8e9_5a628ad0",
       "revId": "1d6311788aee9c590b6b812128c26bc6996dafd6",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     }
