@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94d0c296_f7a9c049",
+        "filename": "MODULE.bazel",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1000177
+      },
+      "writtenOn": "2026-06-09T17:11:37Z",
+      "side": 1,
+      "message": "The point of this migration is to behave like Maven: declare top-level deps and let transitive resolution do the rest.\n\nMost of these entries are transitive — amazon-kinesis-client already pulls cloudwatch/dynamodb/kinesis/netty/rxjava.\n\namazon-kinesis-producer pulls aws-java-sdk-core and jakarta.xml.bind\n\nThe AWS SDK v2 services pull their own siblings + Jackson.\n\nWe always trim to the artifacts source actually imports.\n\nThe lockfile already pins versions transitively.",
+      "range": {
+        "startLine": 17,
+        "startChar": 8,
+        "endLine": 56,
+        "endChar": 75
+      },
+      "revId": "9f0673a8844e3c0451806830d964f6bf18230b7d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    }
+  ]
+}
