@@ -120,7 +120,8 @@ public class KinesisEventsIT extends LightweightPluginDaemonTest {
 
   @Test
   @GerritConfig(name = "plugin.events-aws-kinesis.applicationName", value = "test-consumer")
-  @GerritConfig(name = "plugin.events-aws-kinesis.initialPosition", value = "trim_horizon")
+  @GerritConfig
+          (name = "plugin.events-aws-kinesis.initialPosition", value = "trim_horizon")
   public void shouldConsumeEventBySubscribingWithSpecificGroupId() throws Exception {
     String streamName = UUID.randomUUID().toString();
     String groupId = UUID.randomUUID().toString();
