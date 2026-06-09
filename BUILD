@@ -1,15 +1,32 @@
-load("@rules_java//java:defs.bzl", "java_library")
-load("//tools/bzl:junit.bzl", "junit_tests")
 load(
-    "//tools/bzl:plugin.bzl",
-    "PLUGIN_DEPS",
-    "PLUGIN_TEST_DEPS",
+    "@com_googlesource_gerrit_bazlets//:gerrit_plugin.bzl",
     "gerrit_plugin",
+    "gerrit_plugin_tests",
 )
+load("@rules_java//java:defs.bzl", "java_library")
+
+PLUGIN = "events-aws-kinesis"
+
+EXT_DEPS = [
+    "com.amazonaws:amazon-kinesis-producer",
+    "com.amazonaws:aws-java-sdk-core",
+    "software.amazon.awssdk:auth",
+    "software.amazon.awssdk:cloudwatch",
+    "software.amazon.awssdk:dynamodb",
+    "software.amazon.awssdk:kinesis",
+    "software.amazon.awssdk:regions",
+    "software.amazon.kinesis:amazon-kinesis-client",
+]
+
+TEST_EXT_DEPS = EXT_DEPS + [
+    "org.testcontainers:localstack",
+    "org.testcontainers:testcontainers",
+    "software.amazon.awssdk:url-connection-client",
+]
 
 gerrit_plugin(
-    name = "events-aws-kinesis",
     srcs = glob(["src/main/java/**/*.java"]),
+    ext_deps = EXT_DEPS,
     manifest_entries = [
         "Gerrit-PluginName: events-aws-kinesis",
         "Gerrit-InitStep: com.gerritforge.gerrit.plugins.kinesis.InitConfig",
@@ -17,81 +34,19 @@ gerrit_plugin(
         "Implementation-Title: Gerrit events listener to send events to AWS Kinesis broker",
         "Implementation-URL: https://github.com/GerritForge/events-aws-kinesis",
     ],
+    plugin = PLUGIN,
     resources = glob(["src/main/resources/**/*"]),
     deps = [
         ":events-broker-neverlink",
-        "@amazon-auth//jar",
-        "@amazon-aws-core//jar",
-        "@amazon-cloudwatch//jar",
-        "@amazon-dynamodb//jar",
-        "@amazon-http-client-spi//jar",
-        "@amazon-kinesis-client//jar",
-        "@amazon-kinesis//jar",
-        "@amazon-netty-nio-client//jar",
-        "@amazon-profiles//jar",
-        "@amazon-regions//jar",
-        "@amazon-sdk-core//jar",
-        "@amazon-utils//jar",
-        "@aws-glue-schema-serde//jar",
-        "@aws-java-sdk-core//jar",
-        "@awssdk-cbor-protocol//jar",
-        "@awssdk-json-protocol//jar",
-        "@awssdk-kinesis-producer//jar",
-        "@awssdk-metrics-spi//jar",
-        "@awssdk-protocol-core//jar",
-        "@awssdk-query-protocol//jar",
-        "@commons-lang//jar",
-        "@io-netty-all//jar",
-        "@jackson-annotations//jar",
-        "@jackson-core//jar",
-        "@jackson-databind//jar",
-        "@jackson-dataformat-cbor//jar",
-        "@javax-xml-bind//jar",
-        "@reactive-streams//jar",
-        "@reactor-core//jar",
-        "@rxjava//jar",
     ],
 )
 
-junit_tests(
-    name = "events-aws-kinesis_tests",
+gerrit_plugin_tests(
     timeout = "long",
     srcs = glob(["src/test/java/**/*.java"]),
-    tags = ["events-aws-kinesis"],
-    deps = [
-        ":events-aws-kinesis__plugin_test_deps",
-        "//plugins/events-broker",
-        "@amazon-http-client-spi//jar",
-        "@amazon-kinesis-client//jar",
-        "@amazon-kinesis//jar",
-        "@awssdk-kinesis-producer//jar",
-    ],
-)
-
-java_library(
-    name = "events-aws-kinesis__plugin_test_deps",
-    testonly = 1,
-    visibility = ["//visibility:public"],
-    exports = PLUGIN_DEPS + PLUGIN_TEST_DEPS + [
-        ":events-aws-kinesis__plugin",
-        "@amazon-auth//jar",
-        "@amazon-aws-core//jar",
-        "@amazon-dynamodb//jar",
-        "@amazon-kinesis//jar",
-        "@amazon-profiles//jar",
-        "@amazon-regions//jar",
-        "@amazon-sdk-core//jar",
-        "@aws-java-sdk-core//jar",
-        "@awssdk-url-connection-client//jar",
-        "@docker-java-api//jar",
-        "@docker-java-transport//jar",
-        "@duct-tape//jar",
-        "@jackson-annotations//jar",
-        "@jna//jar",
-        "@testcontainer-localstack//jar",
-        "@testcontainers//jar",
-        "@visible-assertions//jar",
-    ],
+    ext_deps = TEST_EXT_DEPS,
+    plugin = PLUGIN,
+    deps = ["//plugins/events-broker"],
 )
 
 java_library(
