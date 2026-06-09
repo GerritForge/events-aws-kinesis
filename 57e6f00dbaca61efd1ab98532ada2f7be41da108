@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85471f72_e23c5bf7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000177
+      },
+      "writtenOn": "2026-06-09T17:33:03Z",
+      "side": 1,
+      "message": "@danielesassoli@gmail.com I trimmed the external dependencies. Could you verify, please?",
+      "revId": "57e6f00dbaca61efd1ab98532ada2f7be41da108",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    }
+  ]
+}
