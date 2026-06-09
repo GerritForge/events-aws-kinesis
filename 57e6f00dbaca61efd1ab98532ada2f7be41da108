@@ -16,6 +16,24 @@
       "message": "@danielesassoli@gmail.com I trimmed the external dependencies. Could you verify, please?",
       "revId": "57e6f00dbaca61efd1ab98532ada2f7be41da108",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fcb02722_5d9e9273",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1020677
+      },
+      "writtenOn": "2026-06-09T17:57:13Z",
+      "side": 1,
+      "message": "Works for me, yes.",
+      "parentUuid": "85471f72_e23c5bf7",
+      "revId": "57e6f00dbaca61efd1ab98532ada2f7be41da108",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     }
   ]
 }
