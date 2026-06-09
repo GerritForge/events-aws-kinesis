@@ -1,0 +1,52 @@
+module(name = "gerrit-events-aws-kinesis")
+
+bazel_dep(name = "rules_java", version = "9.3.0")
+bazel_dep(name = "rules_jvm_external", version = "7.0")
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+
+AWS_SDK_VER = "2.16.19"
+
+maven.install(
+    name = "events-aws-kinesis_plugin_deps",
+    artifacts = [
+        "com.amazonaws:amazon-kinesis-producer:0.14.6",
+        "com.amazonaws:aws-java-sdk-core:1.11.960",
+        "org.testcontainers:localstack:1.15.3",
+        "org.testcontainers:testcontainers:1.15.3",
+        "software.amazon.awssdk:auth:" + AWS_SDK_VER,
+        "software.amazon.awssdk:cloudwatch:" + AWS_SDK_VER,
+        "software.amazon.awssdk:dynamodb:" + AWS_SDK_VER,
+        "software.amazon.awssdk:kinesis:" + AWS_SDK_VER,
+        "software.amazon.awssdk:regions:" + AWS_SDK_VER,
+        "software.amazon.awssdk:url-connection-client:" + AWS_SDK_VER,
+        "software.amazon.kinesis:amazon-kinesis-client:2.3.4",
+    ],
+    duplicate_version_warning = "error",
+    excluded_artifacts = [
+        "com.google.code.findbugs:jsr305",
+        "software.amazon.awssdk:apache-client",
+        "com.google.errorprone:error_prone_annotations",
+        "com.google.guava:failureaccess",
+        "com.google.guava:guava",
+        "com.google.j2objc:j2objc-annotations",
+        "com.google.protobuf:protobuf-java",
+        "commons-codec:commons-codec",
+        "commons-io:commons-io",
+        "junit:junit",
+        "org.apache.commons:commons-compress",
+        "org.apache.commons:commons-lang3",
+        "org.apache.httpcomponents:httpclient",
+        "org.apache.httpcomponents:httpcore",
+        "org.slf4j:slf4j-api",
+    ],
+    fail_if_repin_required = True,
+    fail_on_missing_checksum = True,
+    fetch_sources = True,
+    lock_file = "//:events-aws-kinesis_plugin_deps.lock.json",
+    repositories = [
+        "https://repo1.maven.org/maven2",
+    ],
+    version_conflict_policy = "pinned",
+)
+use_repo(maven, "events-aws-kinesis_plugin_deps")
