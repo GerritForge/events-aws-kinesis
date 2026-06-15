@@ -153,6 +153,27 @@ Default: 300000 (5 minutes)
     Default: When not specified credentials are provided via the Default Credentials
     Provider Chain, as explained [here](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html)
 
+Partition-aware topics
+----------------------
+
+Logical partitions are configured in `$site_path/etc/events-broker.config`.
+Their declaration order maps directly to Kinesis shards sorted by shard ID. For
+example, the first configured value is routed to `shardId-000000000000`, the
+second to `shardId-000000000001`, and so on.
+
+```ini
+[topic "gerrit"]
+  partitionValue = change-index
+  partitionValue = account-index
+  partitionEventProperty = type
+```
+
+The stream must have at least as many shards as configured partition values.
+Publishing uses an explicit hash key in the selected shard's hash range, and a
+partition-aware consumer leases only the corresponding shard. Changing shard
+topology or the configured partition order changes this mapping and requires
+coordinated reconfiguration.
+
 Overrides
 =========================
 
