@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4388c623_214d8a86",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-19T16:17:24Z",
+      "side": 1,
+      "message": "Could make this configurable. Happy to do it in a follow up.",
+      "range": {
+        "startLine": 37,
+        "startChar": 28,
+        "endLine": 37,
+        "endChar": 30
+      },
+      "revId": "9e5cdc7da23adc39bf7f3b4b3708d0273a49f58a",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    }
+  ]
+}
