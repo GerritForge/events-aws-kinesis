@@ -16,6 +16,7 @@ import com.google.common.flogger.FluentLogger;
 import com.google.gerrit.server.events.Event;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,7 @@ class KinesisConsumer {
     KinesisConsumer create(
         @Assisted("streamName") String streamName,
         @Assisted("groupId") String groupId,
+        @Assisted("routing") Optional<KinesisShardResolver.ShardRouting> routing,
         AckAwareConsumer<Event> messageProcessor);
   }
 
@@ -37,6 +39,7 @@ class KinesisConsumer {
   private final ExecutorService executor;
 
   private final String groupId;
+  private final Optional<KinesisShardResolver.ShardRouting> routing;
   private Scheduler kinesisScheduler;
 
   private final AckAwareConsumer<Event> messageProcessor;
@@ -51,25 +54,32 @@ class KinesisConsumer {
       @ConsumerExecutor ExecutorService executor,
       @Assisted("streamName") String streamName,
       @Assisted("groupId") String groupId,
+      @Assisted("routing") Optional<KinesisShardResolver.ShardRouting> routing,
       @Assisted AckAwareConsumer<Event> messageProcessor) {
     this.schedulerFactory = schedulerFactory;
     this.checkpointResetter = checkpointResetter;
     this.configuration = configuration;
     this.executor = executor;
     this.groupId = groupId;
+    this.routing = routing;
     this.streamName = streamName;
     this.messageProcessor = messageProcessor;
   }
 
   public void subscribe() {
     logger.atInfo().log("Subscribe kinesis consumer to stream [%s]", streamName);
-    runReceiver(groupId, messageProcessor);
+    runReceiver(messageProcessor);
   }
 
-  private void runReceiver(String groupId, AckAwareConsumer<Event> messageProcessor) {
+  private void runReceiver(AckAwareConsumer<Event> messageProcessor) {
     this.kinesisScheduler =
         schedulerFactory
-            .create(streamName, groupId, resetOffset.getAndSet(false), messageProcessor)
+            .create(
+                streamName,
+                groupId,
+                routing.map(KinesisShardResolver.ShardRouting::shardId),
+                resetOffset.getAndSet(false),
+                messageProcessor)
             .get();
     executor.execute(kinesisScheduler);
   }
@@ -98,6 +108,10 @@ class KinesisConsumer {
 
   public String getGroupId() {
     return groupId;
+  }
+
+  public Optional<String> getLogicalPartition() {
+    return routing.map(KinesisShardResolver.ShardRouting::logicalPartition);
   }
 
   public void resetOffset() {
