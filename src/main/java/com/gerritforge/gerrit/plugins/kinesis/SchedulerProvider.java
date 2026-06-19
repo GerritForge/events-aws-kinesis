@@ -18,6 +18,7 @@ import com.google.gerrit.server.events.Event;
 import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import java.util.Optional;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
@@ -25,6 +26,7 @@ import software.amazon.kinesis.common.ConfigsBuilder;
 import software.amazon.kinesis.common.InitialPositionInStream;
 import software.amazon.kinesis.common.InitialPositionInStreamExtended;
 import software.amazon.kinesis.coordinator.Scheduler;
+import software.amazon.kinesis.leases.KinesisShardDetector;
 import software.amazon.kinesis.retrieval.RetrievalConfig;
 import software.amazon.kinesis.retrieval.polling.PollingConfig;
 
@@ -33,6 +35,7 @@ class SchedulerProvider implements Provider<Scheduler> {
     SchedulerProvider create(
         @Assisted("streamName") String streamName,
         @Assisted("groupId") String groupId,
+        @Assisted("shardId") Optional<String> shardId,
         boolean fromBeginning,
         AckAwareConsumer<Event> messageProcessor);
   }
@@ -52,6 +55,7 @@ class SchedulerProvider implements Provider<Scheduler> {
       KinesisRecordProcessorFactory.Factory kinesisRecordProcessorFactory,
       @Assisted("streamName") String streamName,
       @Assisted("groupId") String groupId,
+      @Assisted("shardId") Optional<String> shardId,
       @Assisted boolean fromBeginning,
       @Assisted AckAwareConsumer<Event> messageProcessor) {
     this.configuration = configuration;
@@ -70,6 +74,27 @@ class SchedulerProvider implements Provider<Scheduler> {
     configsBuilder
         .leaseManagementConfig()
         .failoverTimeMillis(configuration.getConsumerFailoverTimeInMs());
+    shardId.ifPresent(
+        targetShardId ->
+            configsBuilder
+                .leaseManagementConfig()
+                .customShardDetectorProvider(
+                    streamConfig ->
+                        new CustomShardDetector(
+                            new KinesisShardDetector(
+                                kinesisAsyncClient,
+                                streamConfig.streamIdentifier(),
+                                configsBuilder
+                                    .leaseManagementConfig()
+                                    .listShardsBackoffTimeInMillis(),
+                                configsBuilder.leaseManagementConfig().maxListShardsRetryAttempts(),
+                                configsBuilder
+                                    .leaseManagementConfig()
+                                    .listShardsCacheAllowedAgeInSeconds(),
+                                configsBuilder.leaseManagementConfig().maxCacheMissesBeforeReload(),
+                                configsBuilder.leaseManagementConfig().cacheMissWarningModulus(),
+                                configsBuilder.leaseManagementConfig().dynamoDbRequestTimeout()),
+                            targetShardId)));
   }
 
   private RetrievalConfig getRetrievalConfig() {

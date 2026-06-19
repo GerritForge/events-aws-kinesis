@@ -16,6 +16,7 @@ import static com.google.inject.Scopes.SINGLETON;
 import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.gerritforge.gerrit.eventbroker.BrokerApi;
 import com.gerritforge.gerrit.eventbroker.TopicSubscriber;
+import com.gerritforge.gerrit.eventbroker.TopicSubscriberWithGroupId;
 import com.google.common.collect.Sets;
 import com.google.gerrit.extensions.events.LifecycleListener;
 import com.google.gerrit.extensions.registration.DynamicItem;
@@ -27,6 +28,7 @@ import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 import software.amazon.awssdk.regions.providers.AwsRegionProviderChain;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
@@ -36,6 +38,7 @@ import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
 public class Module extends LifecycleModule {
   private final Configuration configuration;
   private Set<TopicSubscriber> activeConsumers = Sets.newHashSet();
+  private Set<TopicSubscriberWithGroupId> activeConsumersWithGroupId = Sets.newHashSet();
 
   @Inject
   Module(Configuration configuration) {
@@ -55,7 +58,14 @@ public class Module extends LifecycleModule {
   @Inject(optional = true)
   public void setPreviousBrokerApi(DynamicItem<BrokerApi> previousBrokerApi) {
     if (previousBrokerApi != null && previousBrokerApi.get() != null) {
-      this.activeConsumers = previousBrokerApi.get().topicSubscribers();
+      this.activeConsumersWithGroupId = previousBrokerApi.get().topicSubscribersWithGroupId();
+      Set<TopicSubscriber> consumersWithGroupId =
+          activeConsumersWithGroupId.stream()
+              .map(TopicSubscriberWithGroupId::topicSubscriber)
+              .collect(Collectors.toSet());
+      this.activeConsumers =
+          Sets.difference(previousBrokerApi.get().topicSubscribers(), consumersWithGroupId)
+              .copyInto(Sets.newHashSet());
     }
   }
 
@@ -78,6 +88,8 @@ public class Module extends LifecycleModule {
     bind(AwsRegionProviderChain.class).toInstance(new DefaultAwsRegionProviderChain());
     factory(SchedulerProvider.Factory.class);
     bind(new TypeLiteral<Set<TopicSubscriber>>() {}).toInstance(activeConsumers);
+    bind(new TypeLiteral<Set<TopicSubscriberWithGroupId>>() {})
+        .toInstance(activeConsumersWithGroupId);
     DynamicItem.bind(binder(), BrokerApi.class).to(KinesisBrokerApi.class).in(Scopes.SINGLETON);
     DynamicSet.bind(binder(), LifecycleListener.class).to(KinesisBrokerLifeCycleManager.class);
     factory(KinesisConsumer.Factory.class);
