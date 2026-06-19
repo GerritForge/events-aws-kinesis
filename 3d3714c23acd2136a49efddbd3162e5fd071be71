@@ -24,6 +24,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e388644_b0e22894",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisBrokerLifeCycleManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-19T15:46:58Z",
+      "side": 1,
+      "message": "Good catch. My bad",
+      "parentUuid": "d07cba74_ec700ba2",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 55,
+        "endChar": 11
+      },
+      "revId": "3d3714c23acd2136a49efddbd3162e5fd071be71",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "77602e03_a2df689f",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-06-17T19:16:46Z",
       "side": 1,
       "message": "Changing this creates a new lease and it means a consumer that previously used `groupId` will not reuse its existing checkpoints after switching to partition-aware consumption. It will start from the configured initial position unless explicitly reset.\n\nShould tihs be documented as a migration behavior?",
+      "range": {
+        "startLine": 131,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 52
+      },
+      "revId": "3d3714c23acd2136a49efddbd3162e5fd071be71",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39ee669e_3c316ced",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisConsumer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-19T15:46:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77602e03_a2df689f",
       "range": {
         "startLine": 131,
         "startChar": 0,
@@ -70,6 +118,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "01159805_710d8636",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-19T15:46:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6a6e965_fec52b2c",
+      "range": {
+        "startLine": 56,
+        "startChar": 37,
+        "endLine": 56,
+        "endChar": 42
+      },
+      "revId": "3d3714c23acd2136a49efddbd3162e5fd071be71",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "32b8c2b8_3e4c572d",
@@ -93,6 +165,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "522a916b_c09ff50e",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-19T15:46:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "32b8c2b8_3e4c572d",
+      "range": {
+        "startLine": 85,
+        "startChar": 43,
+        "endLine": 85,
+        "endChar": 81
+      },
+      "revId": "3d3714c23acd2136a49efddbd3162e5fd071be71",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c9ba12df_4fb6493f",
@@ -106,6 +202,30 @@
       "writtenOn": "2026-06-17T19:16:46Z",
       "side": 1,
       "message": "Is this not considering all shards?\nI think we just want to consider he open ones right?",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 54
+      },
+      "revId": "3d3714c23acd2136a49efddbd3162e5fd071be71",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d216444f_41235884",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-19T15:46:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c9ba12df_4fb6493f",
       "range": {
         "startLine": 101,
         "startChar": 0,
@@ -163,6 +283,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d694eae4_471715c7",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-19T15:46:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c7adb75_56879d41",
+      "range": {
+        "startLine": 102,
+        "startChar": 11,
+        "endLine": 102,
+        "endChar": 17
+      },
+      "revId": "3d3714c23acd2136a49efddbd3162e5fd071be71",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "413417ae_1a428443",
@@ -176,6 +320,30 @@
       "writtenOn": "2026-06-17T19:16:46Z",
       "side": 1,
       "message": "The configured order is \"change-index\" first, then \"account-index\" second.\n\nHowever the expected shards in the opposite order:\n\n```\n  public static final String CHANGE_SHARD_ID \u003d \"shardId-000000000001\";\n  public static final String ACCOUNT_SHARD_ID \u003d \"shardId-000000000000\";\n```\n\nthe test expectation appears inconsistent with the actual implementation and documentation. As written, change-index should map to `ACCOUNT_SHARD_ID`, not `CHANGE_SHARD_ID`, no? This is probably due to the sorting.",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 58,
+        "endChar": 62
+      },
+      "revId": "3d3714c23acd2136a49efddbd3162e5fd071be71",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "21b2c11d_a46fae31",
+        "filename": "src/test/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolverTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-19T15:46:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "413417ae_1a428443",
       "range": {
         "startLine": 57,
         "startChar": 0,
