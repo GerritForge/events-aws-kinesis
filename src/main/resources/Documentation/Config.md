@@ -153,6 +153,41 @@ Default: 300000 (5 minutes)
     Default: When not specified credentials are provided via the Default Credentials
     Provider Chain, as explained [here](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html)
 
+Partition-aware topics
+----------------------
+
+Logical partitions are configured in `$site_path/etc/events-broker.config`.
+Their declaration order maps directly to Kinesis shards sorted by shard ID. For
+example, the first configured value is routed to `shardId-000000000000`, the
+second to `shardId-000000000001`, and so on.
+
+```ini
+[topic "gerrit"]
+  partitionValue = change-index
+  partitionValue = account-index
+  partitionEventProperty = type
+```
+
+The stream must have at least as many shards as configured partition values.
+A partition-aware consumer leases only the corresponding shard. Changing shard
+topology or the configured partition order changes this mapping and requires
+coordinated reconfiguration.
+
+__Migration considerations__
+
+Partition-aware consumers use a different consumer group identifier than non-partition-aware consumers in order to maintain
+independent checkpoints for each logical partition.
+
+As a consequence, enabling partition-aware consumption for an existing subscription may cause the consumer to create a new
+lease in Kinesis and start reading from the configured initial position (TRIM_HORIZON, LATEST, or other configured starting
+position) instead of resuming from previously stored checkpoints.
+
+Existing checkpoints created by non-partition-aware consumers are not automatically reused by partition-aware consumers.
+
+When migrating an existing deployment to partition-aware consumption, operators should verify the desired starting position
+and be aware that records may be reprocessed or skipped depending on the stream retention period and the configured initial
+position.
+
 Overrides
 =========================
 

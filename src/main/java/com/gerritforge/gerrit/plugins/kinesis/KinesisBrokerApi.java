@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 class KinesisBrokerApi implements BrokerApi {
   private final KinesisConsumer.Factory consumerFactory;
   private final Configuration configuration;
+  private final KinesisShardResolver shardResolver;
 
   private final KinesisPublisher kinesisPublisher;
   private final Set<KinesisConsumer> consumers;
@@ -36,10 +37,12 @@ class KinesisBrokerApi implements BrokerApi {
   public KinesisBrokerApi(
       KinesisPublisher kinesisPublisher,
       KinesisConsumer.Factory consumerFactory,
-      Configuration configuration) {
+      Configuration configuration,
+      KinesisShardResolver shardResolver) {
     this.kinesisPublisher = kinesisPublisher;
     this.consumerFactory = consumerFactory;
     this.configuration = configuration;
+    this.shardResolver = shardResolver;
     this.consumers = Collections.newSetFromMap(new ConcurrentHashMap<>());
   }
 
@@ -56,6 +59,14 @@ class KinesisBrokerApi implements BrokerApi {
   @Override
   public void receiveAsync(String streamName, String groupId, AckAwareConsumer<Event> consumer) {
     receive(streamName, consumer, groupId);
+  }
+
+  @Override
+  public void receiveAsyncWithPartition(
+      String streamName, String partition, String groupId, AckAwareConsumer<Event> consumer) {
+    KinesisShardResolver.ShardRouting routing =
+        shardResolver.resolveFromLogicalPartition(streamName, partition);
+    receive(streamName, consumer, groupId, Optional.of(routing));
   }
 
   @Override
@@ -96,7 +107,8 @@ class KinesisBrokerApi implements BrokerApi {
             s ->
                 TopicSubscriberWithGroupId.topicSubscriberWithGroupId(
                     s.getGroupId(),
-                    TopicSubscriber.topicSubscriber(s.getStreamName(), s.getMessageProcessor())))
+                    TopicSubscriber.topicSubscriber(s.getStreamName(), s.getMessageProcessor()),
+                    s.getLogicalPartition()))
         .collect(Collectors.toSet());
   }
 
@@ -107,8 +119,16 @@ class KinesisBrokerApi implements BrokerApi {
 
   private void receive(
       String streamName, AckAwareConsumer<Event> eventConsumer, @Nullable String maybeGroupId) {
+    receive(streamName, eventConsumer, maybeGroupId, Optional.empty());
+  }
+
+  private void receive(
+      String streamName,
+      AckAwareConsumer<Event> eventConsumer,
+      @Nullable String maybeGroupId,
+      Optional<KinesisShardResolver.ShardRouting> routing) {
     String groupId = Optional.ofNullable(maybeGroupId).orElse(configuration.getApplicationName());
-    KinesisConsumer consumer = consumerFactory.create(streamName, groupId, eventConsumer);
+    KinesisConsumer consumer = consumerFactory.create(streamName, groupId, routing, eventConsumer);
     consumers.add(consumer);
     consumer.subscribe();
   }
