@@ -13,6 +13,7 @@ package com.gerritforge.gerrit.plugins.kinesis;
 
 import com.gerritforge.gerrit.eventbroker.BrokerApi;
 import com.gerritforge.gerrit.eventbroker.TopicSubscriber;
+import com.gerritforge.gerrit.eventbroker.TopicSubscriberWithGroupId;
 import com.google.gerrit.extensions.events.LifecycleListener;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -21,11 +22,16 @@ import java.util.Set;
 @Singleton
 class KinesisBrokerLifeCycleManager implements LifecycleListener {
   private final Set<TopicSubscriber> consumers;
+  private final Set<TopicSubscriberWithGroupId> consumersWithGroupId;
   private final BrokerApi brokerApi;
 
   @Inject
-  public KinesisBrokerLifeCycleManager(Set<TopicSubscriber> consumers, BrokerApi brokerApi) {
+  public KinesisBrokerLifeCycleManager(
+      Set<TopicSubscriber> consumers,
+      Set<TopicSubscriberWithGroupId> consumersWithGroupId,
+      BrokerApi brokerApi) {
     this.consumers = consumers;
+    this.consumersWithGroupId = consumersWithGroupId;
     this.brokerApi = brokerApi;
   }
 
@@ -34,6 +40,20 @@ class KinesisBrokerLifeCycleManager implements LifecycleListener {
     consumers.forEach(
         topicSubscriber ->
             brokerApi.receiveAsync(topicSubscriber.topic(), topicSubscriber.consumer()));
+    consumersWithGroupId.forEach(
+        consumer -> {
+          TopicSubscriber topicSubscriber = consumer.topicSubscriber();
+          if (consumer.partition().isPresent()) {
+            brokerApi.receiveAsyncWithPartition(
+                topicSubscriber.topic(),
+                consumer.partition().get(),
+                consumer.groupId(),
+                topicSubscriber.consumer());
+          } else {
+            brokerApi.receiveAsync(
+                topicSubscriber.topic(), consumer.groupId(), topicSubscriber.consumer());
+          }
+        });
   }
 
   @Override
