@@ -56,40 +56,59 @@ class CheckpointResetter {
     String leaseTable = consumerLeaseName(groupId, streamName);
 
     try {
-      for (String shard : getAllShards(leaseTable)) {
-        logger.atInfo().log("[%s - %s] Resetting checkpoint", leaseTable, shard);
-
-        Map<String, AttributeValue> updateKey = new HashMap<>();
-        updateKey.put(LEASE_KEY_ATTRIBUTE_NAME, AttributeValue.builder().s(shard).build());
-
-        Map<String, AttributeValueUpdate> updateValues = new HashMap<>();
-        updateValues.put(
-            LEASE_CHECKPOINT_ATTRIBUTE_VAUE,
-            AttributeValueUpdate.builder()
-                .value(AttributeValue.builder().s(TRIM_HORIZON.name().toUpperCase()).build())
-                .build());
-
-        UpdateItemResponse updateItemResponse =
-            dynamoDbAsyncClient
-                .updateItem(
-                    UpdateItemRequest.builder()
-                        .tableName(leaseTable)
-                        .key(updateKey)
-                        .attributeUpdates(updateValues)
-                        .returnValues(ReturnValue.ALL_OLD)
-                        .build())
-                .get(DYNAMODB_RESPONSE_TIMEOUT_SECS, TimeUnit.SECONDS);
-
-        logger.atInfo().log(
-            "[%s - %s] Successfully reset checkpoints. old value: %s",
-            leaseTable, shard, updateItemResponse);
-      }
+      setShardsToBeginning(leaseTable, getAllShards(leaseTable));
     } catch (InterruptedException e) {
       logger.atWarning().log("%s resetOffset: interrupted", leaseTable);
     } catch (ExecutionException e) {
       logger.atSevere().withCause(e).log("%s resetOffset: Error", leaseTable);
     } catch (TimeoutException e) {
       logger.atSevere().withCause(e).log("%s resetOffset: Timeout", leaseTable);
+    }
+  }
+
+  public void setShardToBeginning(String streamName, String groupId, String shardId) {
+    String leaseTable = consumerLeaseName(groupId, streamName);
+
+    try {
+      setShardsToBeginning(leaseTable, Set.of(shardId));
+    } catch (InterruptedException e) {
+      logger.atWarning().log("%s resetOffset: interrupted", leaseTable);
+    } catch (ExecutionException e) {
+      logger.atSevere().withCause(e).log("%s resetOffset: Error", leaseTable);
+    } catch (TimeoutException e) {
+      logger.atSevere().withCause(e).log("%s resetOffset: Timeout", leaseTable);
+    }
+  }
+
+  private void setShardsToBeginning(String leaseTable, Set<String> shardIds)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    for (String shard : shardIds) {
+      logger.atInfo().log("[%s - %s] Resetting checkpoint", leaseTable, shard);
+
+      Map<String, AttributeValue> updateKey = new HashMap<>();
+      updateKey.put(LEASE_KEY_ATTRIBUTE_NAME, AttributeValue.builder().s(shard).build());
+
+      Map<String, AttributeValueUpdate> updateValues = new HashMap<>();
+      updateValues.put(
+          LEASE_CHECKPOINT_ATTRIBUTE_VAUE,
+          AttributeValueUpdate.builder()
+              .value(AttributeValue.builder().s(TRIM_HORIZON.name().toUpperCase()).build())
+              .build());
+
+      UpdateItemResponse updateItemResponse =
+          dynamoDbAsyncClient
+              .updateItem(
+                  UpdateItemRequest.builder()
+                      .tableName(leaseTable)
+                      .key(updateKey)
+                      .attributeUpdates(updateValues)
+                      .returnValues(ReturnValue.ALL_OLD)
+                      .build())
+              .get(DYNAMODB_RESPONSE_TIMEOUT_SECS, TimeUnit.SECONDS);
+
+      logger.atInfo().log(
+          "[%s - %s] Successfully reset checkpoints. old value: %s",
+          leaseTable, shard, updateItemResponse);
     }
   }
 
