@@ -17,7 +17,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.gerritforge.gerrit.eventbroker.EventsBrokerConfiguration;
+import com.google.gerrit.server.events.Event;
+import com.google.gerrit.server.events.EventGsonProvider;
+import com.google.gerrit.server.events.EventTypes;
+import com.google.gerrit.server.events.ProjectCreatedEvent;
+import com.google.gson.Gson;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,24 +39,28 @@ import software.amazon.awssdk.services.kinesis.model.Shard;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KinesisShardResolverTest {
-  private static final String STREAM_EVENTS = "stream-events";
-  private static final String CHANGE_SHARD_ID = "shardId-000000000001";
-  private static final String ACCOUNT_SHARD_ID = "shardId-000000000000";
-  private static final String CHANGE_START_HASH_KEY = "100";
-  private static final String ACCOUNT_START_HASH_KEY = "0";
-  private static final String CHANGE_END_HASH_KEY = "199";
-  private static final String ACCOUNT_END_HASH_KEY = "99";
+  public static final String STREAM_EVENTS = "stream-events";
+  public static final String CHANGE_INDEX_PARTITION = "change-index";
+  public static final String ACCOUNT_INDEX_PARTITION = "account-index";
+  public static final String CHANGE_SHARD_ID = "shardId-000000000001";
+  public static final String ACCOUNT_SHARD_ID = "shardId-000000000000";
+  public static final String CHANGE_START_HASH_KEY = "100";
+  public static final String ACCOUNT_START_HASH_KEY = "0";
+  public static final String CHANGE_END_HASH_KEY = "199";
+  public static final String ACCOUNT_END_HASH_KEY = "99";
 
   @Mock EventsBrokerConfiguration configuration;
   @Mock KinesisAsyncClient kinesisClient;
 
+  private final Gson gson = new EventGsonProvider().get();
   private KinesisShardResolver resolver;
   private Shard changeIndexShard;
   private Shard accountIndexShard;
 
   @Before
   public void setUp() {
-    resolver = new KinesisShardResolver(configuration, kinesisClient);
+    EventTypes.register(ChangeIndexEvent.TYPE, ChangeIndexEvent.class);
+    resolver = new KinesisShardResolver(configuration, kinesisClient, gson);
     changeIndexShard = shard(CHANGE_SHARD_ID, CHANGE_START_HASH_KEY, CHANGE_END_HASH_KEY);
     accountIndexShard = shard(ACCOUNT_SHARD_ID, ACCOUNT_START_HASH_KEY, ACCOUNT_END_HASH_KEY);
     when(configuration.getPartitionsForTopic(STREAM_EVENTS))
@@ -64,12 +74,16 @@ public class KinesisShardResolverTest {
   @Test
   public void shouldMapPartitionsToOpenShardsSortedByShardId() {
     KinesisShardResolver.ShardRouting changeRouting =
-        resolver.resolveFromLogicalPartition(STREAM_EVENTS, "change-index");
+        resolver.resolveFromLogicalPartition(STREAM_EVENTS, CHANGE_INDEX_PARTITION);
     KinesisShardResolver.ShardRouting accountRouting =
-        resolver.resolveFromLogicalPartition(STREAM_EVENTS, "account-index");
+        resolver.resolveFromLogicalPartition(STREAM_EVENTS, ACCOUNT_INDEX_PARTITION);
 
     assertThat(changeRouting.shardId()).isEqualTo(ACCOUNT_SHARD_ID);
+    assertThat(changeRouting.explicitHashKey())
+        .isEqualTo(resolver.getExplicitHashKey(accountIndexShard));
     assertThat(accountRouting.shardId()).isEqualTo(CHANGE_SHARD_ID);
+    assertThat(accountRouting.explicitHashKey())
+        .isEqualTo(resolver.getExplicitHashKey(changeIndexShard));
   }
 
   @Test
@@ -90,6 +104,62 @@ public class KinesisShardResolverTest {
                 + "but stream has only 1 open shards");
   }
 
+  @Test
+  public void shouldNotResolveRoutingForTopicWithoutPartitions() {
+    Event event = new ProjectCreatedEvent();
+    when(configuration.getPartitionsForTopic(STREAM_EVENTS)).thenReturn(List.of());
+
+    assertThat(resolver.resolveFromEvent(STREAM_EVENTS, event)).isEmpty();
+  }
+
+  @Test
+  public void shouldFailWhenPartitionAwareTopicDoesNotConfigureEventProperty() {
+    Event event = changeIndexEvent();
+    when(configuration.getPartitionsForTopic(STREAM_EVENTS))
+        .thenReturn(List.of(CHANGE_INDEX_PARTITION));
+    when(configuration.getEventPropertyForTopic(STREAM_EVENTS)).thenReturn(Optional.empty());
+
+    IllegalArgumentException thrown =
+        assertThrows(
+            IllegalArgumentException.class, () -> resolver.resolveFromEvent(STREAM_EVENTS, event));
+
+    assertThat(thrown)
+        .hasMessageThat()
+        .contains("Topic stream-events has configured partitions but no partition event property");
+  }
+
+  @Test
+  public void shouldFailWhenEventDoesNotContainPartitionProperty() {
+    Event event = new ProjectCreatedEvent();
+    when(configuration.getPartitionsForTopic(STREAM_EVENTS)).thenReturn(List.of("project-created"));
+    when(configuration.getEventPropertyForTopic(STREAM_EVENTS)).thenReturn(Optional.of("missing"));
+
+    IllegalArgumentException thrown =
+        assertThrows(
+            IllegalArgumentException.class, () -> resolver.resolveFromEvent(STREAM_EVENTS, event));
+
+    assertThat(thrown)
+        .hasMessageThat()
+        .contains("Event does not contain partition property missing");
+  }
+
+  @Test
+  public void shouldResolveRoutingFromConfiguredEventProperty() {
+    Event event = changeIndexEvent();
+    when(configuration.getPartitionsForTopic(STREAM_EVENTS))
+        .thenReturn(List.of(CHANGE_INDEX_PARTITION, ACCOUNT_INDEX_PARTITION));
+    when(configuration.getEventPropertyForTopic(STREAM_EVENTS)).thenReturn(Optional.of("type"));
+
+    Optional<KinesisShardResolver.ShardRouting> routing =
+        resolver.resolveFromEvent(STREAM_EVENTS, event);
+
+    assertThat(routing).isPresent();
+    assertThat(routing.get().logicalPartition()).isEqualTo(CHANGE_INDEX_PARTITION);
+    assertThat(routing.get().shardId()).isEqualTo(ACCOUNT_SHARD_ID);
+    assertThat(routing.get().explicitHashKey())
+        .isEqualTo(resolver.getExplicitHashKey(accountIndexShard));
+  }
+
   private Shard shard(String shardId, String startingHashKey, String endingHashKey) {
     return Shard.builder()
         .shardId(shardId)
@@ -100,5 +170,17 @@ public class KinesisShardResolverTest {
                 .build())
         .sequenceNumberRange(SequenceNumberRange.builder().startingSequenceNumber("1").build())
         .build();
+  }
+
+  private Event changeIndexEvent() {
+    return new ChangeIndexEvent();
+  }
+
+  static class ChangeIndexEvent extends Event {
+    static final String TYPE = CHANGE_INDEX_PARTITION;
+
+    ChangeIndexEvent() {
+      super(TYPE);
+    }
   }
 }
