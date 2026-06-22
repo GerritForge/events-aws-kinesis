@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.nio.ByteBuffer;
+import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -38,6 +39,7 @@ class KinesisPublisher implements EventListener {
   private final KinesisProducer kinesisProducer;
   private final Configuration configuration;
   private final ExecutorService callBackExecutor;
+  private final KinesisShardResolver shardResolver;
 
   private final Gson gson;
 
@@ -46,31 +48,44 @@ class KinesisPublisher implements EventListener {
       @EventGson Gson gson,
       KinesisProducer kinesisProducer,
       Configuration configuration,
-      @ProducerCallbackExecutor ExecutorService callBackExecutor) {
+      @ProducerCallbackExecutor ExecutorService callBackExecutor,
+      KinesisShardResolver shardResolver) {
     this.gson = gson;
     this.kinesisProducer = kinesisProducer;
     this.configuration = configuration;
     this.callBackExecutor = callBackExecutor;
+    this.shardResolver = shardResolver;
   }
 
   @Override
   public void onEvent(Event event) {
-    publish(configuration.getStreamEventsTopic(), event);
+    String streamName = configuration.getStreamEventsTopic();
+    publish(streamName, event, shardResolver.resolveFromEvent(streamName, event));
   }
 
-  ListenableFuture<Boolean> publish(String streamName, Event event) {
+  ListenableFuture<Boolean> publish(
+      String streamName, Event event, Optional<KinesisShardResolver.ShardRouting> shardRouting) {
+    String partitionKey =
+        shardRouting
+            .map(KinesisShardResolver.ShardRouting::logicalPartition)
+            .orElse(event.getType());
+    Optional<String> explicitHashKey =
+        shardRouting.map(KinesisShardResolver.ShardRouting::explicitHashKey);
     if (configuration.isSendAsync()) {
-      return publishAsync(streamName, gson.toJson(event), event.getType());
+      return publishAsync(streamName, gson.toJson(event), partitionKey, explicitHashKey);
     }
-    return publishSync(streamName, gson.toJson(event), event.getType());
+    return publishSync(streamName, gson.toJson(event), partitionKey, explicitHashKey);
   }
 
   private ListenableFuture<Boolean> publishSync(
-      String streamName, String stringEvent, String partitionKey) {
+      String streamName,
+      String stringEvent,
+      String partitionKey,
+      Optional<String> explicitHashKey) {
     SettableFuture<Boolean> resultFuture = SettableFuture.create();
     try {
       resultFuture.set(
-          publishAsync(streamName, stringEvent, partitionKey)
+          publishAsync(streamName, stringEvent, partitionKey, explicitHashKey)
               .get(configuration.getPublishTimeoutMs(), TimeUnit.MILLISECONDS));
     } catch (CancellationException
         | ExecutionException
@@ -85,11 +100,20 @@ class KinesisPublisher implements EventListener {
   }
 
   private ListenableFuture<Boolean> publishAsync(
-      String streamName, String stringEvent, String partitionKey) {
+      String streamName,
+      String stringEvent,
+      String partitionKey,
+      Optional<String> explicitHashKey) {
     try {
       ListenableFuture<UserRecordResult> publishF =
-          kinesisProducer.addUserRecord(
-              streamName, partitionKey, ByteBuffer.wrap(stringEvent.getBytes()));
+          explicitHashKey.isPresent()
+              ? kinesisProducer.addUserRecord(
+                  streamName,
+                  partitionKey,
+                  explicitHashKey.get(),
+                  ByteBuffer.wrap(stringEvent.getBytes()))
+              : kinesisProducer.addUserRecord(
+                  streamName, partitionKey, ByteBuffer.wrap(stringEvent.getBytes()));
 
       Futures.addCallback(
           publishF,

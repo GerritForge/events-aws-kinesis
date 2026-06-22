@@ -168,8 +168,8 @@ second to `shardId-000000000001`, and so on.
   partitionEventProperty = type
 ```
 
-The stream must have at least as many shards as configured partition values.
-A partition-aware consumer leases only the corresponding shard. Changing shard
+Publishing uses an explicit hash key in the selected shard's hash range, and a
+partition-aware consumer leases only the corresponding shard. Changing shard
 topology or the configured partition order changes this mapping and requires
 coordinated reconfiguration.
 
