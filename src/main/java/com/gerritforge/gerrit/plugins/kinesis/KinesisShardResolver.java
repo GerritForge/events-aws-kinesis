@@ -15,12 +15,17 @@ import com.gerritforge.gerrit.eventbroker.EventsBrokerConfiguration;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.gerrit.server.events.Event;
+import com.google.gerrit.server.events.EventGson;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
@@ -39,12 +44,16 @@ class KinesisShardResolver {
 
   private final EventsBrokerConfiguration eventsBrokerConfiguration;
   private final KinesisAsyncClient kinesisClient;
+  private final Gson gson;
 
   @Inject
   KinesisShardResolver(
-      EventsBrokerConfiguration eventsBrokerConfiguration, KinesisAsyncClient kinesisClient) {
+      EventsBrokerConfiguration eventsBrokerConfiguration,
+      KinesisAsyncClient kinesisClient,
+      @EventGson Gson gson) {
     this.eventsBrokerConfiguration = eventsBrokerConfiguration;
     this.kinesisClient = kinesisClient;
+    this.gson = gson;
   }
 
   ShardRouting resolveFromLogicalPartition(String streamName, String logicalPartition) {
@@ -107,5 +116,30 @@ class KinesisShardResolver {
 
   private boolean isOpen(Shard shard) {
     return shard.sequenceNumberRange().endingSequenceNumber() == null;
+  }
+
+  Optional<ShardRouting> resolveFromEvent(String streamName, Event event) {
+    List<String> partitions = eventsBrokerConfiguration.getPartitionsForTopic(streamName);
+    if (partitions.isEmpty()) {
+      return Optional.empty();
+    }
+
+    String eventProperty =
+        eventsBrokerConfiguration
+            .getEventPropertyForTopic(streamName)
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        String.format(
+                            "Topic %s has configured partitions but no partition event property",
+                            streamName)));
+    JsonObject eventJson = gson.toJsonTree(event).getAsJsonObject();
+    if (!eventJson.has(eventProperty)) {
+      throw new IllegalArgumentException(
+          String.format("Event does not contain partition property %s", eventProperty));
+    }
+
+    String partition = eventJson.get(eventProperty).getAsString();
+    return Optional.of(resolveFromLogicalPartition(streamName, partition));
   }
 }
