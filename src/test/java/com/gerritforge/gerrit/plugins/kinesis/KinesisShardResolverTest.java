@@ -19,7 +19,13 @@ import static org.mockito.Mockito.when;
 
 import com.gerritforge.gerrit.eventbroker.EventsBrokerConfiguration;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import com.google.gerrit.server.events.Event;
+import com.google.gerrit.server.events.EventGsonProvider;
+import com.google.gerrit.server.events.ProjectCreatedEvent;
+import com.google.gson.Gson;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,13 +51,14 @@ public class KinesisShardResolverTest {
   @Mock EventsBrokerConfiguration configuration;
   @Mock KinesisAsyncClient kinesisClient;
 
+  private final Gson gson = new EventGsonProvider().get();
   private KinesisShardResolver resolver;
   private Shard changeIndexShard;
   private Shard accountIndexShard;
 
   @Before
   public void setUp() {
-    resolver = new KinesisShardResolver(configuration, kinesisClient);
+    resolver = new KinesisShardResolver(configuration, kinesisClient, gson);
     changeIndexShard = shard(CHANGE_SHARD_ID, CHANGE_START_HASH_KEY, CHANGE_END_HASH_KEY);
     accountIndexShard = shard(ACCOUNT_SHARD_ID, ACCOUNT_START_HASH_KEY, ACCOUNT_END_HASH_KEY);
     when(configuration.getPartitionsForTopic(STREAM_EVENTS))
@@ -85,6 +92,24 @@ public class KinesisShardResolverTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> resolver.resolveFromLogicalPartition(STREAM_EVENTS, "account-index"));
+  }
+
+  @Test
+  public void shouldNotResolveRoutingForTopicWithoutPartitions() {
+    Event event = new ProjectCreatedEvent();
+    when(configuration.getPartitionsForTopic(STREAM_EVENTS)).thenReturn(List.of());
+
+    assertThat(resolver.resolveFromEvent(STREAM_EVENTS, event)).isEmpty();
+  }
+
+  @Test
+  public void shouldFailWhenEventDoesNotContainPartitionProperty() {
+    Event event = new ProjectCreatedEvent();
+    when(configuration.getPartitionsForTopic(STREAM_EVENTS)).thenReturn(List.of("project-created"));
+    when(configuration.getEventPropertyForTopic(STREAM_EVENTS)).thenReturn(Optional.of("missing"));
+
+    assertThrows(
+        IllegalArgumentException.class, () -> resolver.resolveFromEvent(STREAM_EVENTS, event));
   }
 
   private Shard shard(String shardId, String startingHashKey, String endingHashKey) {
