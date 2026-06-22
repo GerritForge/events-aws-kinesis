@@ -48,7 +48,8 @@ class KinesisBrokerApi implements BrokerApi {
 
   @Override
   public ListenableFuture<Boolean> send(String streamName, Event event) {
-    return kinesisPublisher.publish(streamName, event);
+    return kinesisPublisher.publish(
+        streamName, event, shardResolver.resolveFromEvent(streamName, event));
   }
 
   @Override

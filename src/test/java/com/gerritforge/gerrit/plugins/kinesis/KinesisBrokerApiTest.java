@@ -13,10 +13,12 @@ package com.gerritforge.gerrit.plugins.kinesis;
 
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.google.gerrit.server.events.Event;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,5 +52,31 @@ public class KinesisBrokerApiTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> brokerApi.receiveAsyncWithPartition(STREAM_EVENTS, "unknown", GROUP_ID, consumer));
+  }
+
+  @Test
+  public void shouldPublishUsingTheConfiguredLogicalPartition() {
+    Event event = changeIndexEvent();
+    KinesisShardResolver.ShardRouting routing =
+        new KinesisShardResolver.ShardRouting(PARTITION, "shardId-000000000000", "100");
+    when(shardResolver.resolveFromEvent(STREAM_EVENTS, event)).thenReturn(Optional.of(routing));
+
+    brokerApi.send(STREAM_EVENTS, event);
+
+    verify(publisher).publish(STREAM_EVENTS, event, Optional.of(routing));
+  }
+
+  @Test
+  public void shouldPublishWithoutLogicalPartitionWhenTopicIsNotPartitionAware() {
+    Event event = changeIndexEvent();
+    when(shardResolver.resolveFromEvent(STREAM_EVENTS, event)).thenReturn(Optional.empty());
+
+    brokerApi.send(STREAM_EVENTS, event);
+
+    verify(publisher).publish(STREAM_EVENTS, event, Optional.empty());
+  }
+
+  private Event changeIndexEvent() {
+    return new Event(PARTITION) {};
   }
 }
