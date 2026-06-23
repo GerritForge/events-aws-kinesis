@@ -18,6 +18,24 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2cb32ac_6a649ed5",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/CustomShardDetector.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c34628ad_1b261e00",
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "72584313_130d1513",
@@ -31,6 +49,30 @@
       "writtenOn": "2026-06-23T09:54:10Z",
       "side": 1,
       "message": "Can we actually return `null` here? The overridden method is not annotated as `@Nullable`. What happens when this method returns `null`? Will KCL get `NullPointerException`?",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 3
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6238ac5b_493557ea",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/CustomShardDetector.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72584313_130d1513",
       "range": {
         "startLine": 28,
         "startChar": 0,
@@ -64,6 +106,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6bf4e42_1351f93a",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisBrokerLifeCycleManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "c3b4c7e8_1a395a1c",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 88
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "90739360_6cdab1bb",
@@ -77,6 +143,30 @@
       "writtenOn": "2026-06-23T10:00:08Z",
       "side": 1,
       "message": "This is now ignored, should we not just call: `runReceiver(messageProcessor)`?",
+      "range": {
+        "startLine": 74,
+        "startChar": 27,
+        "endLine": 74,
+        "endChar": 41
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "58ff9d9b_74b2026d",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisConsumer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90739360_6cdab1bb",
       "range": {
         "startLine": 74,
         "startChar": 27,
@@ -134,6 +224,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "17148472_b83dddaa",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisConsumer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "The client already has the possibility of passing a specific `groupId` in the API, hence it doesn\u0027t make sense to override the name chosen by the client.\n\nThis doesn\u0027t bring any advantage.",
+      "parentUuid": "d1883ce1_f039c921",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 25
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6d1cc72b_fade046e",
@@ -147,6 +261,30 @@
       "writtenOn": "2026-06-23T09:54:10Z",
       "side": 1,
       "message": "This doesn\u0027t seem to be used anywhere",
+      "range": {
+        "startLine": 33,
+        "startChar": 62,
+        "endLine": 33,
+        "endChar": 85
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db5a43a7_d69a21a7",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "It will be used in the publisher. Moving it to the next change.",
+      "parentUuid": "6d1cc72b_fade046e",
       "range": {
         "startLine": 33,
         "startChar": 62,
@@ -180,6 +318,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b32d0bb_1790da78",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b408b48_44cdbad6",
+      "range": {
+        "startLine": 60,
+        "startChar": 16,
+        "endLine": 60,
+        "endChar": 22
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "54503781_a7c71ed3",
@@ -193,6 +355,30 @@
       "writtenOn": "2026-06-23T10:00:08Z",
       "side": 1,
       "message": "Consider mentioning the logical partition that cannot be mapped.\n\nSomething like:\n```\nLogical partition account-index has index 3 for topic stream-events, but stream has only 2 open shards\n```",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 81
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "990eed0d_6a207290",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54503781_a7c71ed3",
       "range": {
         "startLine": 64,
         "startChar": 0,
@@ -226,6 +412,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba72f9f1_9e3ee1f0",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "daaac9c2_20c8272e",
+      "range": {
+        "startLine": 76,
+        "startChar": 85,
+        "endLine": 76,
+        "endChar": 90
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b3727bd6_71660d02",
@@ -239,6 +449,30 @@
       "writtenOn": "2026-06-23T09:54:10Z",
       "side": 1,
       "message": "I am confused, this is passed to `ShardRouting` at L70 but the consumer creation path only passes `routing.map(KinesisShardResolver.ShardRouting::shardId)` into `SchedulerProvider`, so this explicit hash key is not used anywhere.",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 3
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a43c18f4_7f1436bf",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Moved in the next change. Only used by the publisher",
+      "parentUuid": "b3727bd6_71660d02",
       "range": {
         "startLine": 73,
         "startChar": 0,
@@ -285,6 +519,30 @@
       "writtenOn": "2026-06-23T10:00:08Z",
       "side": 1,
       "message": "Do all of these need to be public?",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 43,
+        "endChar": 57
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "97ea8ab2_f5ba8681",
+        "filename": "src/test/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolverTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a3f3748_15441c8d",
       "range": {
         "startLine": 38,
         "startChar": 0,

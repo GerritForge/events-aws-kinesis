@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "713b50a0_e1cf1e7e",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisConsumer.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-23T14:44:26Z",
+      "side": 1,
+      "message": "We should have a new method to only reset the specific shard this consumer is associated to.",
+      "range": {
+        "startLine": 120,
+        "startChar": 23,
+        "endLine": 120,
+        "endChar": 46
+      },
+      "revId": "98843eced4e39dfde533b5faae889a414093731f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    }
+  ]
+}
