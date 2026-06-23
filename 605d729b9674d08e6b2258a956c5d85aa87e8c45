@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c34628ad_1b261e00",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/CustomShardDetector.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:54:10Z",
+      "side": 1,
+      "message": "Consider adding JavaDocs for public classes",
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72584313_130d1513",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/CustomShardDetector.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:54:10Z",
+      "side": 1,
+      "message": "Can we actually return `null` here? The overridden method is not annotated as `@Nullable`. What happens when this method returns `null`? Will KCL get `NullPointerException`?",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 3
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3b4c7e8_1a395a1c",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisBrokerLifeCycleManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:54:10Z",
+      "side": 1,
+      "message": "We have `groupId` here, should we not call the API with group Id?\n```\nbrokerApi.receiveAsync(topicSubscriber.topic(), consumer.groupId(), topicSubscriber.consumer());\n```",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 88
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e1729ed1_5731e8ac",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisConsumer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:54:10Z",
+      "side": 1,
+      "message": "If I understand correctly, this is:\n\n- setting a lease name value like: \"multi-site-change-index\"\n- Filter all shards that had an offset stored for this lease back to `TRIM_HORIZON`\n\nWoudn\u0027t that mean we need a checkpointer",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 25
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d1cc72b_fade046e",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:54:10Z",
+      "side": 1,
+      "message": "This doesn\u0027t seem to be used anywhere",
+      "range": {
+        "startLine": 33,
+        "startChar": 62,
+        "endLine": 33,
+        "endChar": 85
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b408b48_44cdbad6",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:54:10Z",
+      "side": 1,
+      "message": "consider renaming to `openShards`",
+      "range": {
+        "startLine": 60,
+        "startChar": 16,
+        "endLine": 60,
+        "endChar": 22
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3727bd6_71660d02",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:54:10Z",
+      "side": 1,
+      "message": "I am confused, this is passed to `ShardRouting` at L70 but the consumer creation path only passes `routing.map(KinesisShardResolver.ShardRouting::shardId)` into `SchedulerProvider`, so this explicit hash key is not used anywhere.",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 3
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea146a1f_d7184ed4",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:54:10Z",
+      "side": 1,
+      "message": "The documentation says logical partitions map to \"Kinesis shards sorted by shard ID\" and gives examples like shardId-000000000000, shardId-000000000001, but here we sort by `hashKeyRange().startingHashKey()`, not by `shardId`.\n\nWhat\u0027s the most stable ordering we can use? can we not use hash-key **range** here?",
+      "range": {
+        "startLine": 104,
+        "startChar": 0,
+        "endLine": 104,
+        "endChar": 98
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    }
+  ]
+}
