@@ -89,6 +89,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d1883ce1_f039c921",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisConsumer.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-23T09:55:07Z",
+      "side": 1,
+      "message": "Sorry sent too early:\n\nWoudn\u0027t that mean we need a checkpointer that uses this `groupId + \"-\" + partition` at consumption time?\nWhere is that happening?",
+      "parentUuid": "e1729ed1_5731e8ac",
+      "range": {
+        "startLine": 128,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 25
+      },
+      "revId": "605d729b9674d08e6b2258a956c5d85aa87e8c45",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6d1cc72b_fade046e",
         "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
         "patchSetId": 4
