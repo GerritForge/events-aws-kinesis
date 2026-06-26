@@ -22,6 +22,30 @@
       },
       "revId": "9e5cdc7da23adc39bf7f3b4b3708d0273a49f58a",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "baaf7834_945e63d5",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1015244
+      },
+      "writtenOn": "2026-06-26T07:53:01Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "4388c623_214d8a86",
+      "range": {
+        "startLine": 37,
+        "startChar": 28,
+        "endLine": 37,
+        "endChar": 30
+      },
+      "revId": "9e5cdc7da23adc39bf7f3b4b3708d0273a49f58a",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     }
   ]
 }
