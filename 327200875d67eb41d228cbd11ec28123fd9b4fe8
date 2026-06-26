@@ -24,6 +24,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "db6f0bc5_1470c31e",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-26T07:31:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90c1b3e5_4cc8a1dc",
+      "range": {
+        "startLine": 39,
+        "startChar": 46,
+        "endLine": 39,
+        "endChar": 85
+      },
+      "revId": "327200875d67eb41d228cbd11ec28123fd9b4fe8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "122ea013_7deaf014",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-06-25T16:18:19Z",
       "side": 1,
       "message": "I think this deserves an explanation, something like:\n\n```\n// Use the midpoint of the shard hash-key range so the explicit hash key\n// deterministically falls inside the target shard.\n```\n\nAlso a quick comment as to why we are using BigInteger would be useful.",
+      "range": {
+        "startLine": 143,
+        "startChar": 0,
+        "endLine": 147,
+        "endChar": 3
+      },
+      "revId": "327200875d67eb41d228cbd11ec28123fd9b4fe8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7d3bd5a_9e3001f1",
+        "filename": "src/main/java/com/gerritforge/gerrit/plugins/kinesis/KinesisShardResolver.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-26T07:31:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "122ea013_7deaf014",
       "range": {
         "startLine": 143,
         "startChar": 0,
@@ -70,6 +118,30 @@
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7939d8a9_a3da0bd3",
+        "filename": "src/test/java/com/gerritforge/gerrit/plugins/kinesis/KinesisPublisherTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-26T07:31:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d319e5cb_d9daaf51",
+      "range": {
+        "startLine": 35,
+        "startChar": 13,
+        "endLine": 35,
+        "endChar": 33
+      },
+      "revId": "327200875d67eb41d228cbd11ec28123fd9b4fe8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5f64d653_79899acf",
@@ -83,6 +155,30 @@
       "writtenOn": "2026-06-25T16:18:19Z",
       "side": 1,
       "message": "Consider adding a test for sync publishing as well.",
+      "range": {
+        "startLine": 50,
+        "startChar": 2,
+        "endLine": 50,
+        "endChar": 55
+      },
+      "revId": "327200875d67eb41d228cbd11ec28123fd9b4fe8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd90010e_12972e6e",
+        "filename": "src/test/java/com/gerritforge/gerrit/plugins/kinesis/KinesisPublisherTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1012541
+      },
+      "writtenOn": "2026-06-26T07:31:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5f64d653_79899acf",
       "range": {
         "startLine": 50,
         "startChar": 2,
