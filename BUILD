@@ -10,6 +10,7 @@ PLUGIN = "events-aws-kinesis"
 EXT_DEPS = [
     "com.amazonaws:amazon-kinesis-producer",
     "com.amazonaws:aws-java-sdk-core",
+    "com.amazonaws:aws-java-sdk-sts",
     "io.netty:netty-all",
     "io.projectreactor:reactor-core",
     "javax.xml.bind:jaxb-api",
@@ -18,6 +19,8 @@ EXT_DEPS = [
     "software.amazon.awssdk:dynamodb",
     "software.amazon.awssdk:kinesis",
     "software.amazon.awssdk:regions",
+    "software.amazon.awssdk:sts",
+    "software.amazon.awssdk:url-connection-client",
     "software.amazon.kinesis:amazon-kinesis-client",
 ]
 
@@ -25,7 +28,6 @@ TEST_EXT_DEPS = EXT_DEPS + [
     "org.testcontainers:localstack",
     "org.testcontainers:testcontainers",
     "software.amazon.awssdk:sdk-core",
-    "software.amazon.awssdk:url-connection-client",
 ]
 
 gerrit_plugin(

@@ -3,6 +3,7 @@
   "__INPUT_ARTIFACTS_HASH": {
     "com.amazonaws:amazon-kinesis-producer": -598272367,
     "com.amazonaws:aws-java-sdk-core": 951485693,
+    "com.amazonaws:aws-java-sdk-sts": 513910192,
     "com.google.code.findbugs:jsr305": -313338248,
     "com.google.errorprone:error_prone_annotations": 227507220,
     "com.google.guava:failureaccess": -1493823684,
@@ -29,6 +30,7 @@
     "software.amazon.awssdk:dynamodb": -951997107,
     "software.amazon.awssdk:kinesis": 1522642371,
     "software.amazon.awssdk:regions": -945427636,
+    "software.amazon.awssdk:sts": 1069329529,
     "software.amazon.awssdk:url-connection-client": 1160890223,
     "software.amazon.kinesis:amazon-kinesis-client": 1324142987
   },
@@ -37,6 +39,10 @@
     "com.amazonaws:amazon-kinesis-producer:jar:sources": -457732917,
     "com.amazonaws:aws-java-sdk-core": -319173920,
     "com.amazonaws:aws-java-sdk-core:jar:sources": -134939268,
+    "com.amazonaws:aws-java-sdk-sts": -1400661806,
+    "com.amazonaws:aws-java-sdk-sts:jar:sources": 1036281574,
+    "com.amazonaws:jmespath-java": -569337506,
+    "com.amazonaws:jmespath-java:jar:sources": -2078630313,
     "com.fasterxml.jackson.core:jackson-annotations": -1954247452,
     "com.fasterxml.jackson.core:jackson-annotations:jar:sources": 1738339621,
     "com.fasterxml.jackson.core:jackson-core": 1941349742,
@@ -167,6 +173,8 @@
     "software.amazon.awssdk:regions:jar:sources": -1424210349,
     "software.amazon.awssdk:sdk-core": -395381389,
     "software.amazon.awssdk:sdk-core:jar:sources": -359917101,
+    "software.amazon.awssdk:sts": 923005650,
+    "software.amazon.awssdk:sts:jar:sources": 161967233,
     "software.amazon.awssdk:url-connection-client": -87306752,
     "software.amazon.awssdk:url-connection-client:jar:sources": 1889687315,
     "software.amazon.awssdk:utils": 334020544,
@@ -194,6 +202,20 @@
       "shasums": {
         "jar": "c7906c4142324e9243467855de7fd3dd6f600fc135b37b03aa94e8ec097ee0de",
         "sources": "d9d46bc26ec39c5c70a335452e26f3d2cecb48b92752d0320f5e07015dfd5be2"
+      },
+      "version": "1.11.960"
+    },
+    "com.amazonaws:aws-java-sdk-sts": {
+      "shasums": {
+        "jar": "29fca58275ca53cbfe1037c71c0c245ec78988bc4151e0026f6184b743a3bced",
+        "sources": "e19b7cbca6634aa2c4843bc444d01064d6d495bb9899b4a451d5358c33d0bdf3"
+      },
+      "version": "1.11.960"
+    },
+    "com.amazonaws:jmespath-java": {
+      "shasums": {
+        "jar": "4dcdf3aba4a2af597d30a9b3a2c62446fb511343b1d7fb6e0abf97164ca3e0cb",
+        "sources": "a66b6f2ab229148a105b21ddd3c2221a4ac4b52b4af5346157374942077fbd93"
       },
       "version": "1.11.960"
     },
@@ -652,6 +674,13 @@
       },
       "version": "2.16.19"
     },
+    "software.amazon.awssdk:sts": {
+      "shasums": {
+        "jar": "82b8c7ea81de1e026a2ef5f7ef3e079e41e355d5ecca537677a29594e6072b3a",
+        "sources": "ff05e8ddef9f1a5477a3ad899a8ffa11b3aa93ce1e24e3464437f59f0a0a1621"
+      },
+      "version": "2.16.19"
+    },
     "software.amazon.awssdk:url-connection-client": {
       "shasums": {
         "jar": "4d150b710b1e671a6e3d41dced8d9a12f47983450177a10d4ec93b3329376ddf",
@@ -715,6 +744,13 @@
       "commons-logging:commons-logging",
       "joda-time:joda-time",
       "software.amazon.ion:ion-java"
+    ],
+    "com.amazonaws:aws-java-sdk-sts": [
+      "com.amazonaws:aws-java-sdk-core",
+      "com.amazonaws:jmespath-java"
+    ],
+    "com.amazonaws:jmespath-java": [
+      "com.fasterxml.jackson.core:jackson-databind"
     ],
     "com.fasterxml.jackson.core:jackson-databind": [
       "com.fasterxml.jackson.core:jackson-annotations",
@@ -996,6 +1032,20 @@
       "software.amazon.awssdk:profiles",
       "software.amazon.awssdk:utils"
     ],
+    "software.amazon.awssdk:sts": [
+      "software.amazon.awssdk:annotations",
+      "software.amazon.awssdk:auth",
+      "software.amazon.awssdk:aws-core",
+      "software.amazon.awssdk:aws-query-protocol",
+      "software.amazon.awssdk:http-client-spi",
+      "software.amazon.awssdk:metrics-spi",
+      "software.amazon.awssdk:netty-nio-client",
+      "software.amazon.awssdk:profiles",
+      "software.amazon.awssdk:protocol-core",
+      "software.amazon.awssdk:regions",
+      "software.amazon.awssdk:sdk-core",
+      "software.amazon.awssdk:utils"
+    ],
     "software.amazon.awssdk:url-connection-client": [
       "software.amazon.awssdk:annotations",
       "software.amazon.awssdk:http-client-spi",
@@ -1105,6 +1155,18 @@
       "com.amazonaws.util.endpoint",
       "com.amazonaws.util.json",
       "com.amazonaws.waiters"
+    ],
+    "com.amazonaws:aws-java-sdk-sts": [
+      "com.amazonaws.auth",
+      "com.amazonaws.auth.policy",
+      "com.amazonaws.auth.policy.actions",
+      "com.amazonaws.services.securitytoken",
+      "com.amazonaws.services.securitytoken.internal",
+      "com.amazonaws.services.securitytoken.model",
+      "com.amazonaws.services.securitytoken.model.transform"
+    ],
+    "com.amazonaws:jmespath-java": [
+      "com.amazonaws.jmespath"
     ],
     "com.fasterxml.jackson.core:jackson-annotations": [
       "com.fasterxml.jackson.annotation"
@@ -2164,6 +2226,13 @@
       "software.amazon.awssdk.core.util.json",
       "software.amazon.awssdk.core.waiters"
     ],
+    "software.amazon.awssdk:sts": [
+      "software.amazon.awssdk.services.sts",
+      "software.amazon.awssdk.services.sts.auth",
+      "software.amazon.awssdk.services.sts.internal",
+      "software.amazon.awssdk.services.sts.model",
+      "software.amazon.awssdk.services.sts.transform"
+    ],
     "software.amazon.awssdk:url-connection-client": [
       "software.amazon.awssdk.http.urlconnection"
     ],
@@ -2231,6 +2300,10 @@
       "com.amazonaws:amazon-kinesis-producer:jar:sources",
       "com.amazonaws:aws-java-sdk-core",
       "com.amazonaws:aws-java-sdk-core:jar:sources",
+      "com.amazonaws:aws-java-sdk-sts",
+      "com.amazonaws:aws-java-sdk-sts:jar:sources",
+      "com.amazonaws:jmespath-java",
+      "com.amazonaws:jmespath-java:jar:sources",
       "com.fasterxml.jackson.core:jackson-annotations",
       "com.fasterxml.jackson.core:jackson-annotations:jar:sources",
       "com.fasterxml.jackson.core:jackson-core",
@@ -2361,6 +2434,8 @@
       "software.amazon.awssdk:regions:jar:sources",
       "software.amazon.awssdk:sdk-core",
       "software.amazon.awssdk:sdk-core:jar:sources",
+      "software.amazon.awssdk:sts",
+      "software.amazon.awssdk:sts:jar:sources",
       "software.amazon.awssdk:url-connection-client",
       "software.amazon.awssdk:url-connection-client:jar:sources",
       "software.amazon.awssdk:utils",

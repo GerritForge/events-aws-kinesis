@@ -7,6 +7,7 @@ avro
 aws-cbor-protocol
 aws-core
 aws-java-sdk-core
+aws-java-sdk-sts
 aws-json-protocol
 aws-query-protocol
 cloudwatch
@@ -28,6 +29,7 @@ jakarta.activation-api
 jakarta.xml.bind-api
 javax.activation-api
 jaxb-api
+jmespath-java
 joda-time
 kafka-clients
 kafka-streams
@@ -61,5 +63,7 @@ schema-registry-common
 schema-registry-serde
 sdk-core
 snappy-java
+sts
+url-connection-client
 utils
 zstd-jni-1.4.4
