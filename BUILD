@@ -35,6 +35,7 @@ gerrit_plugin(
         "Gerrit-PluginName: events-aws-kinesis",
         "Gerrit-InitStep: com.gerritforge.gerrit.plugins.kinesis.InitConfig",
         "Gerrit-Module: com.gerritforge.gerrit.plugins.kinesis.Module",
+        "Gerrit-HttpModule: com.gerritforge.gerrit.plugins.bsl.HttpModule",
         "Implementation-Title: Gerrit events listener to send events to AWS Kinesis broker",
         "Implementation-URL: https://github.com/GerritForge/events-aws-kinesis",
     ],
@@ -42,6 +43,7 @@ gerrit_plugin(
     resources = glob(["src/main/resources/**/*"]),
     deps = [
         ":events-broker-neverlink",
+        "//plugins/gerrit-bsl-license",
     ],
 )
 
