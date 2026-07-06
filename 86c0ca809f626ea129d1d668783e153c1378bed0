@@ -1,0 +1,7 @@
+Code-Review+2: barbasa <ponch78@gmail.com>
+Verified+1: GerritForge Ltd <info@gerritforge.com>
+Submitted-by: Daniele Sassoli <danielesassoli@gmail.com>
+Submitted-at: Mon, 06 Jul 2026 10:54:53 +0000
+Reviewed-on: https://review.gerrithub.io/c/GerritForge/events-aws-kinesis/+/1240959
+Project: GerritForge/events-aws-kinesis
+Branch: refs/heads/stable-3.14
