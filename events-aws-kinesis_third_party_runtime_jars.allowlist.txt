@@ -17,6 +17,7 @@ connect-api
 connect-json
 dynamodb
 eventstream
+gerrit-bsl-license
 glue
 http-client-spi
 ion-java
