@@ -97,7 +97,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldProcessEventWithoutSourceInstanceId() {
+  public void shouldProcessEventWithoutSourceInstanceId() throws InterruptedException {
     Event event = new ProjectCreatedEvent();
     event.instanceId = UUID.randomUUID().toString();
 
@@ -109,7 +109,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldParseEventObject() {
+  public void shouldParseEventObject() throws InterruptedException {
     String instanceId = "instance-id";
 
     Event event = new ProjectCreatedEvent();
@@ -125,7 +125,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldProcessEventObjectWithoutInstanceId() {
+  public void shouldProcessEventObjectWithoutInstanceId() throws InterruptedException {
     Event event = new ProjectCreatedEvent();
     event.instanceId = null;
 
@@ -136,7 +136,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldSkipEventObjectWithUnknownType() {
+  public void shouldSkipEventObjectWithUnknownType() throws InterruptedException {
     String instanceId = "instance-id";
     Event event = new Event("unknown-type") {};
     event.instanceId = instanceId;
@@ -148,7 +148,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldSkipEventObjectWithoutType() {
+  public void shouldSkipEventObjectWithoutType() throws InterruptedException {
     String instanceId = "instance-id";
     Event event = new Event(null) {};
     event.instanceId = instanceId;
@@ -160,7 +160,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldSkipEmptyObjectJsonPayload() {
+  public void shouldSkipEmptyObjectJsonPayload() throws InterruptedException {
     String emptyJsonObject = "{}";
 
     ProcessRecordsInput kinesisInput = sampleMessage(emptyJsonObject);
@@ -170,7 +170,7 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
-  public void shouldParseEventObjectWithHeaderAndBodyProjectName() {
+  public void shouldParseEventObjectWithHeaderAndBodyProjectName() throws InterruptedException {
     ProjectCreatedEvent event = new ProjectCreatedEvent();
     event.instanceId = "instance-id";
     event.projectName = "header_body_parser_project";
