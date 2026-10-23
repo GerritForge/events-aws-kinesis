@@ -12,17 +12,22 @@
 package com.gerritforge.gerrit.plugins.kinesis;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.gerritforge.gerrit.eventbroker.AckAwareConsumer;
 import com.gerritforge.gerrit.eventbroker.EventDeserializer;
+import com.gerritforge.gerrit.eventbroker.MessageAcknowledgement;
+import com.gerritforge.gerrit.eventbroker.MessageAcknowledgementException;
 import com.google.gerrit.server.events.Event;
 import com.google.gerrit.server.events.EventGsonProvider;
+import com.google.gerrit.server.events.EventTypes;
 import com.google.gerrit.server.events.ProjectCreatedEvent;
 import com.google.gerrit.server.util.ManualRequestContext;
 import com.google.gerrit.server.util.OneOffRequestContext;
@@ -55,6 +60,7 @@ public class KinesisRecordProcessorTest {
 
   @Mock AckAwareConsumer<Event> succeedingConsumer;
   @Captor ArgumentCaptor<Event> eventMessageCaptor;
+  @Captor ArgumentCaptor<MessageAcknowledgement<Event>> acknowledgementCaptor;
   @Mock OneOffRequestContext oneOffCtx;
   @Mock ManualRequestContext requestContext;
   @Mock Configuration configuration;
@@ -214,6 +220,47 @@ public class KinesisRecordProcessorTest {
   }
 
   @Test
+  public void shouldRejectAckForOlderEventAndCheckpointCurrentEvent() throws Exception {
+    when(configuration.isAutoCommitEnabled()).thenReturn(false);
+    String message = gson.toJson(new ProjectCreatedEvent());
+    KinesisClientRecord firstRecord = sampleClientRecord("1", message);
+    KinesisClientRecord latestRecord = sampleClientRecord("2", message);
+
+    objectUnderTest.processRecords(sampleMessage(firstRecord));
+    objectUnderTest.processRecords(sampleMessage(latestRecord));
+
+    verify(succeedingConsumer, times(2))
+        .accept(eventMessageCaptor.capture(), acknowledgementCaptor.capture());
+    Event olderEvent = eventMessageCaptor.getAllValues().get(0);
+    MessageAcknowledgement<Event> olderAcknowledgement =
+        acknowledgementCaptor.getAllValues().get(0);
+    assertThrows(MessageAcknowledgementException.class, () -> olderAcknowledgement.ack(olderEvent));
+    acknowledgementCaptor.getValue().ack(eventMessageCaptor.getValue());
+
+    verify(checkpointer, only())
+        .checkpoint(latestRecord.sequenceNumber(), latestRecord.subSequenceNumber());
+  }
+
+  @Test
+  public void shouldRejectAckForEqualEventCopy() {
+    when(configuration.isAutoCommitEnabled()).thenReturn(false);
+    Event event = new TestEvent();
+    EventTypes.register(event.getType(), TestEvent.class);
+
+    objectUnderTest.processRecords(sampleMessage(gson.toJson(event)));
+
+    verify(succeedingConsumer)
+        .accept(eventMessageCaptor.capture(), acknowledgementCaptor.capture());
+    Event eventCopy = new TestEvent();
+    assertThat(eventCopy).isEqualTo(eventMessageCaptor.getValue());
+    assertThrows(
+        MessageAcknowledgementException.class,
+        () -> acknowledgementCaptor.getValue().ack(eventCopy));
+
+    verifyNoInteractions(checkpointer);
+  }
+
+  @Test
   public void shouldRejectExplicitAckWhenAutomaticCommitIsEnabled() {
     AtomicReference<IllegalStateException> thrown = new AtomicReference<>();
     objectUnderTest =
@@ -249,6 +296,22 @@ public class KinesisRecordProcessorTest {
     objectUnderTest.shardEnded(ShardEndedInput.builder().checkpointer(checkpointer).build());
 
     verify(checkpointer, never()).checkpoint();
+  }
+
+  private static class TestEvent extends Event {
+    private TestEvent() {
+      super("kinesis-test-event");
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      return other instanceof TestEvent;
+    }
+
+    @Override
+    public int hashCode() {
+      return getType().hashCode();
+    }
   }
 
   private ProcessRecordsInput sampleMessage(String message) {
