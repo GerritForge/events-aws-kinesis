@@ -20,7 +20,6 @@ import com.google.gerrit.server.util.ManualRequestContext;
 import com.google.gerrit.server.util.OneOffRequestContext;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import java.util.HashMap;
 import software.amazon.kinesis.exceptions.InvalidStateException;
 import software.amazon.kinesis.exceptions.ShutdownException;
 import software.amazon.kinesis.exceptions.ThrottlingException;
@@ -39,7 +38,7 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
   }
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
-  private final HashMap<Event, KinesisClientRecord> ackRecords = new HashMap<>();
+  private PendingRecord pendingRecord;
   private final AckAwareConsumer<Event> recordProcessor;
   private final OneOffRequestContext oneOffCtx;
   private final EventDeserializer eventDeserializer;
@@ -47,6 +46,8 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
 
   private long nextCheckpointTimeInMillis;
   private String kinesisShardId;
+
+  private record PendingRecord(Event event, KinesisClientRecord record) {}
 
   @Inject
   KinesisRecordProcessor(
@@ -69,21 +70,17 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
   }
 
   private void ackRecord(Event event, RecordProcessorCheckpointer checkpointer) {
-    KinesisClientRecord record = ackRecords.get(event);
-    if (record == null) {
+    // An older event may compare equal to the latest delivery, so require the delivered instance.
+    if (pendingRecord == null || pendingRecord.event() != event) {
       throw new MessageAcknowledgementException("Invalid or already acked Event");
     }
 
+    KinesisClientRecord record = pendingRecord.record();
     try {
       checkpointer.checkpoint(record.sequenceNumber(), record.subSequenceNumber());
       logger.atFine().log(
           "Checkpointed record %s:%d", record.sequenceNumber(), record.subSequenceNumber());
-      // We currently checkpoint every acknowledged record, so removing it from ackRecords here is
-      // correct. If we later adopt a different strategy, for example a batched strategy, this
-      // cleanup will need to be revisited because removing only the current event may no longer be
-      // sufficient. Related discussion in the Kafka implementation:
-      // https://issues.gerritcodereview.com/u/1/issues/515709509
-      ackRecords.remove(event);
+      pendingRecord = null;
     } catch (Exception e) {
       throw new MessageAcknowledgementException(
           String.format(
@@ -113,7 +110,7 @@ class KinesisRecordProcessor implements ShardRecordProcessor {
                   if (configuration.isAutoCommitEnabled()) {
                     recordProcessor.accept(eventMessage, KinesisAutoAcknowledgement.INSTANCE);
                   } else {
-                    ackRecords.put(eventMessage, consumerRecord);
+                    pendingRecord = new PendingRecord(eventMessage, consumerRecord);
                     recordProcessor.accept(
                         eventMessage,
                         (event) -> ackRecord(event, processRecordsInput.checkpointer()));
