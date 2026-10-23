@@ -109,6 +109,11 @@ The events-aws-kinesis plugin is configured by adding a plugin stanza in the
   Manual acknowledgements must be performed synchronously and in the same order
   in which records are delivered. Asynchronous or out-of-order acknowledgements
   are not supported.
+  Only the latest event delivered from each shard can be acknowledged. Pass the
+  original event instance received by the callback; equal copies and already
+  acknowledged events are rejected. A checkpoint also covers all earlier records
+  in the shard. Clients can batch acknowledgements by handling those records
+  first and acknowledging the latest event when ready.
   If an acknowledgement throws an exception, KCL continues processing the
   remaining records in the batch. The batch is not failed explicitly, and no
   additional retry is triggered beyond leaving the checkpoint unchanged.
